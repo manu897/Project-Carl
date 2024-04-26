@@ -25,4 +25,5 @@ empty_file.o: C:/ncs/v2.5.99-dev1/zephyr/misc/empty_file.c \
  C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_common-pinctrl.dtsi \
  C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/input/input-event-codes.h \
  C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_partition_conf.dtsi \
- C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi
+ C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi \
+ c:/Users/manid/Downloads/Project-Carl/thingy53_nrf5340_cpuapp_ns.overlay

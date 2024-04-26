@@ -8,7 +8,8 @@ This project addresses the Plant health monitoring need using a IOT based produc
 ### Hardware used
 
 - [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53)
+    - [BME688](https://cdn.shopify.com/s/files/1/0174/1800/files/bst-bme688-ds000.pdf?v=1620834794) | Digital low power gas, pressure, temperature & humidity sensor
 
 ## Author: 
 
-[Manideep Reddy Tamma](mailto:manideep@bioliberty.co.uk) / [LinkedIn](https://www.linkedin.com/in/manideep-reddy-tamma/)
+[Manideep Reddy Tamma](mailto:manideep@bioliberty.co.uk) | [LinkedIn](https://www.linkedin.com/in/manideep-reddy-tamma/)

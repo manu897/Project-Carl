@@ -152,7 +152,7 @@
 				#address-cells = < 0x1 >;
 				#size-cells = < 0x0 >;
 				reg = < 0x9000 0x1000 >;
-				clock-frequency = < 0x61a80 >;
+				clock-frequency = < 0x186a0 >;
 				interrupts = < 0x9 0x1 >;
 				status = "okay";
 				pinctrl-0 = < &i2c1_default >;
@@ -170,6 +170,11 @@
 				bme688: bme688@76 {
 					compatible = "bosch,bme680";
 					reg = < 0x76 >;
+				};
+				bme680: bme680@76 {
+					compatible = "bosch,bme680";
+					reg = < 0x76 >;
+					label = "BME680";
 				};
 			};
 			spi1: spi@9000 {
