@@ -5,6 +5,10 @@
 
 This project addresses the Plant health monitoring need using a IOT based product. Scope of this project is limited by the hardware and more focused on to the Firmware of the hardware.
 
+The system is shown below. TBD - more details
+
+![Block Diagram](./documents/media/Project_Carl_System_Overview.png "System Overview")
+
 ### Hardware used
 
 - [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53)

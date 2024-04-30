@@ -11,26 +11,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/printk.h>
 
-// /* 1000 msec = 1 sec */
-// #define SLEEP_TIME_MS   1000
-
-// /*******************************************************************
-//  * Function Declarations
-//  *******************************************************************/
-// void WelcomeSplash(void);
-// void EnvSensorRead(void);
-
-/*******************************************************************
- * Define the address of relevant sensor registers and settings
- *******************************************************************/
-#define I2C_NODE DT_NODELABEL (BME680)
-
-#define BME688_STATUS            0x73
-#define BME688_RESET             0xE0
-#define BME688_CHIP_ID           0xD0
-#define BME688_CONFIG            0x75
-#define BME688_CTRL_MEAS         0x74   // Sensor power mode 1. 00 = sleep mode, 2. 01 = Forced mode, 3. 10 = Parallel mode.
-#define BME688_CTRL_HUM          0x72   
+#include "bme688_reg.h"
 
 /*
  * Copyright (c) 2012-2014 Wind River Systems, Inc.
