@@ -14,6 +14,21 @@ The system is shown below. TBD - more details
 - [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53)
     - [BME688](https://cdn.shopify.com/s/files/1/0174/1800/files/bst-bme688-ds000.pdf?v=1620834794) | Digital low power gas, pressure, temperature & humidity sensor
 
+### Code file Structure
+
+```
+* build
+* src
+    |__ main.c
+            |__ bme688_interface.c
+            |__ bme688_reg.h
+            |__ ble.c
+            |__ ble.h
+* CMakeLists.txt
+* prj.conf
+* thingy53_nrf5340_cpuapp_ns.overlay
+```
+
 ## Author: 
 
 [Manideep Reddy Tamma](mailto:manideep@bioliberty.co.uk) | [LinkedIn](https://www.linkedin.com/in/manideep-reddy-tamma/)

@@ -25,8 +25,9 @@
 #define BME688_CONFIG            0x75
 #define BME688_CTRL_MEAS         0x74   // Sensor power mode 1. 00 = sleep mode, 2. 01 = Forced mode, 3. 10 = Parallel mode.
 #define BME688_CTRL_HUM          0x72   // Controls over sampling setting of humidity sensor 1. 000 = Skipped (out set to 0x8000), 2. 001 = Oversampling x 1, 3. 010 = x2, 4. 011 = x4, 5. 100 = x8, 6. 101,others = x16.
-#define BME688_CTRL_GAS_1        0X71
-#define BME688_CTRL_GAS_0        0X70
+#define BME688_CTRL_GAS_1        0x71
+#define BME688_CTRL_GAS_0        0x70
+#define BME688_MEAS_STATUS_0     0x1D
 
 // Read
 #define BME688_HUM_LSB_0         0x26   // 16bit
@@ -45,6 +46,5 @@
 /*******************************************************************
  * Function Declarations
  *******************************************************************/
-void WelcomeSplash(void);
-void EnvSensorWrite(void);
+void EnvSensorConfig(void);
 void EnvSensorRead(void);
