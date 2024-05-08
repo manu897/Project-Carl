@@ -14,7 +14,7 @@
 #define SLEEP_TIME_MS   1000
 
 // Get the I2C Node identifier of the sensor
-#define I2C_NODE DT_NODELABEL (BME680)
+#define I2C_NODE DT_NODELABEL (BME688)
 
 // Sensor registers addresses and settings
 

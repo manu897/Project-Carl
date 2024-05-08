@@ -13,6 +13,7 @@
 
 #include "bme688_reg.h"
 
+
 void EnvSensorConfig(void)
 {
    // ******************** /// Forced Mode /// ******************** //
@@ -35,5 +36,11 @@ void EnvSensorConfig(void)
 
 void EnvSensorRead(void)
 {
+    // declare the variables for incoming data
 
+    // do a burst read of temperature
+    // do a burst read of pressure
+    // do a burst read of humidity (8s response time)    
+
+    // print on terminal the values on floating point
 }
