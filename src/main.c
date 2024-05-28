@@ -14,9 +14,8 @@
 /* including private headers */
 #include "bme688_reg.h"
 
-/* The code snippet `/* 1000x30 = 30sec*/ #define SLEEP_TIME_MS (1000*30)` is defining a constant
-`SLEEP_TIME_MS` with a value of 30 seconds in milliseconds. */
-/* 1000x30 = 30sec*/
+/* The code snippet */
+/* 1000x30 = 30sec */
 #define SLEEP_TIME_MS	(1000*30)
 
 /*
@@ -34,15 +33,10 @@ void main(void)
 	printk(" Initiating the Plant Monitor (Project-Carl) Using Thingy:53 with board configuration: %s\n", CONFIG_BOARD);
 
 	int ret;
-	
-
-
-
-
 
 	// Test example (start) //
 
-	/* printk("BME68x Example Thingy:53! board configuration: %s\n", CONFIG_BOARD);
+	printk("BME68x Example Thingy:53! board configuration: %s\n", CONFIG_BOARD);
 
 	const struct device *bme = DEVICE_DT_GET_ONE(bosch_bme680);
 	struct sensor_value temp, press, humidity, gas_res;
@@ -68,6 +62,6 @@ void main(void)
 				temp.val1, temp.val2, press.val1, press.val2,
 				humidity.val1, humidity.val2, gas_res.val1,
 				gas_res.val2);
-	} */
+	}
 	// Test example (End) // 
 }
