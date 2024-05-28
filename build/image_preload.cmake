@@ -1,0 +1,11 @@
+# Generated file that can be used to preload variant images
+set(BOARD "thingy53_nrf5340_cpuapp_ns" CACHE INTERNAL "NCS child image controlled")
+set(CACHED_CONF_FILE "c:/Users/manid/Downloads/Project-Carl/prj.conf" CACHE INTERNAL "NCS child image controlled")
+set(CONF_FILE_BUILD_TYPE "" CACHE INTERNAL "NCS child image controlled")
+set(DTC_OVERLAY_FILE "c:/Users/manid/Downloads/Project-Carl/thingy53_nrf5340_cpuapp_ns.overlay" CACHE INTERNAL "NCS child image controlled")
+set(NCS_TOOLCHAIN_VERSION "NONE" CACHE INTERNAL "NCS child image controlled")
+set(WEST_PYTHON "C:/ncs/toolchains/c57af46cb7/opt/bin/python.exe" CACHE INTERNAL "NCS child image controlled")
+set(empty_net_core_OVERLAY_CONFIG "C:/ncs/v2.5.99-dev1/nrf/subsys/bootloader/image/secure_boot.conf;C:/ncs/v2.5.99-dev1/nrf/subsys/partition_manager/partition_manager_enabled.conf" CACHE INTERNAL "NCS child image controlled")
+set(mcuboot_DTC_OVERLAY_FILE "C:/ncs/v2.5.99-dev1/nrf/modules/mcuboot/flash_sim.overlay" CACHE INTERNAL "NCS child image controlled")
+set(mcuboot_DTC_OVERLAY_FILE "C:/ncs/v2.5.99-dev1/nrf/modules/mcuboot/flash_sim.overlay" CACHE INTERNAL "NCS child image controlled")
+set(mcuboot_OVERLAY_CONFIG "C:/ncs/v2.5.99-dev1/nrf/subsys/pcd/pcd.conf;C:/ncs/v2.5.99-dev1/nrf/subsys/partition_manager/ext_flash_mcuboot_secondary.conf;C:/ncs/v2.5.99-dev1/nrf/modules/mcuboot/tfm.conf;C:/ncs/v2.5.99-dev1/nrf/modules/mcuboot/fih_low_enable.conf;C:/ncs/v2.5.99-dev1/nrf/subsys/partition_manager/partition_manager_enabled.conf" CACHE INTERNAL "NCS child image controlled")

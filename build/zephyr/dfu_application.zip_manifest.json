@@ -1,0 +1,41 @@
+{
+    "format-version": 0,
+    "time": 1714657268,
+    "files": [
+        {
+            "type": "application",
+            "board": "thingy53_nrf5340_cpuapp",
+            "soc": "nRF5340_CPUAPP_QKAA",
+            "load_address": 114688,
+            "image_index": "0",
+            "slot_index_primary": "1",
+            "slot_index_secondary": "2",
+            "version_MCUBOOT": "0.0.0+0",
+            "size": 122712,
+            "file": "app_update.bin",
+            "modtime": 1714657268
+        },
+        {
+            "type": "application",
+            "board": "thingy53_nrf5340_cpunet",
+            "soc": "nRF5340_CPUNET_QKAA",
+            "image_index": "1",
+            "slot_index_primary": "3",
+            "slot_index_secondary": "4",
+            "load_address": 16812032,
+            "version": "1",
+            "size": 19668,
+            "file": "net_core_app_update.bin",
+            "modtime": 1714657257
+        }
+    ],
+    "name": "Project-Carl",
+    "firmware": {
+        "zephyr": {
+            "revision": "a1b553bfa6bb4c8220d36babfbf3d926246a2dc0-dirty"
+        },
+        "nrf": {
+            "revision": "e4863e9e4240c5c861289176be61e08e639471a3"
+        }
+    }
+}

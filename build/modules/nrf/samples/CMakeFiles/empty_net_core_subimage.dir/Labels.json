@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage-complete.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-build.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-configure.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-download.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-install.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-patch.rule"
+		},
+		{
+			"file" : "C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"empty_net_core_subimage"
+		],
+		"name" : "empty_net_core_subimage"
+	}
+}
