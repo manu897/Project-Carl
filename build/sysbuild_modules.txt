@@ -1,1 +1,1 @@
-"nrf":"C:/ncs/v2.5.99-dev1/nrf":"C:/ncs/v2.5.99-dev1/nrf/sysbuild"
+"nrf":"/opt/nordic/ncs/v2.6.0/nrf":"/opt/nordic/ncs/v2.6.0/nrf/sysbuild"
