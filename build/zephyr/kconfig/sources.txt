@@ -1,3 +1,4 @@
+C:\Users\manid\Downloads\Project-Carl\Kconfig
 C:\Users\manid\Downloads\Project-Carl\build\Kconfig\Kconfig.dts
 C:\Users\manid\Downloads\Project-Carl\build\Kconfig\Kconfig.modules
 C:\Users\manid\Downloads\Project-Carl\build\Kconfig\Kconfig.shield
@@ -310,7 +311,6 @@ C:\ncs\v2.5.99-dev1\nrfxlib\nrf_modem\Kconfig
 C:\ncs\v2.5.99-dev1\nrfxlib\nrf_rpc\Kconfig
 C:\ncs\v2.5.99-dev1\nrfxlib\openthread\Kconfig
 C:\ncs\v2.5.99-dev1\nrfxlib\zboss\Kconfig
-C:\ncs\v2.5.99-dev1\zephyr\Kconfig
 C:\ncs\v2.5.99-dev1\zephyr\Kconfig.zephyr
 C:\ncs\v2.5.99-dev1\zephyr\arch\Kconfig
 C:\ncs\v2.5.99-dev1\zephyr\arch\arm\Kconfig

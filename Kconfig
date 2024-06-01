@@ -1,4 +1,4 @@
 source "Kconfig.zephyr"
 config BME688
 	bool "Enable bme688"
-	default n
+	default n 

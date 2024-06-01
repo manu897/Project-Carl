@@ -59,9 +59,9 @@ Linux(Ubuntu 22.0.2)
 
 ![Static Badge](https://img.shields.io/badge/build-unknown-white)
 
-MacOs
+MacOs Sonoma 14.5 (23F79)
 
-![Static Badge](https://img.shields.io/badge/build-unknown-white)
+![Static Badge](https://img.shields.io/badge/build-Failed-red)
 
 ## Author
 

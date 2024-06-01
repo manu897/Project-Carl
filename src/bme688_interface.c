@@ -18,6 +18,8 @@ void EnvSensorConfig(void)
 {
    // ******************** /// Forced Mode /// ******************** //
 
+    
+
     // set humidity oversampling
     // set temperature oversampling
     // set heat oversampling
