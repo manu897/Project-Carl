@@ -5,7 +5,12 @@
  * Description:  header file for bme688_interface
  * Reference for the BME688 sensor manufacturer document https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf
  *******************************************************************/
-
+// #include <zephyr/kernel.h>
+// #include <zephyr/device.h>
+// #include <zephyr/devicetree.h>
+// #include <zephyr/drivers/i2c.h>
+// #include <zephyr/logging/log.h>
+// #include <zephyr/sys/printk.h>
 
 /*******************************************************************
  * defines
@@ -14,20 +19,23 @@
 #define SLEEP_TIME_MS   1000*2
 
 // Get the I2C Node identifier of the sensor
-// #define I2C_NODE DT_NODELABEL (BME680)
+// #define I2C_NODE DT_NODELABEL (BME688)
+
 
 // Sensor registers addresses and settings
 
 // Control
-#define BME688_STATUS            0x73
-#define BME688_RESET             0xE0
-#define BME688_CHIP_ID           0xD0
-#define BME688_CONFIG            0x75
-#define BME688_CTRL_MEAS         0x74   // Sensor power mode 1. 00 = sleep mode, 2. 01 = Forced mode, 3. 10 = Parallel mode.
-#define BME688_CTRL_HUM          0x72   // Controls over sampling setting of humidity sensor 1. 000 = Skipped (out set to 0x8000), 2. 001 = Oversampling x 1, 3. 010 = x2, 4. 011 = x4, 5. 100 = x8, 6. 101,others = x16.
-#define BME688_CTRL_GAS_1        0x71
-#define BME688_CTRL_GAS_0        0x70
-#define BME688_MEAS_STATUS_0     0x1D
+#define BME688_STATUS                           0x73
+#define BME688_RESET                            0xE0
+#define BME688_CHIP_ID                          0xD0
+#define BME688_CONFIG                           0x75
+#define BME688_CTRL_MEAS                        0x74   // Sensor power mode 1. 00 = sleep mode, 2. 01 = Forced mode, 3. 10 = Parallel mode.
+#define BME688_CTRL_HUM                         0x72   // Controls over sampling setting of humidity sensor 1. 000 = Skipped (out set to 0x8000), 2. 001 = Oversampling x 1, 3. 010 = x2, 4. 011 = x4, 5. 100 = x8, 6. 101,others = x16.
+#define BME688_CTRL_GAS_1                       0x71
+#define BME688_CTRL_GAS_0                       0x70
+#define BME688_MEAS_STATUS_0                    0x1D
+#define BME688_MODE_CTRL_HUM_DEFAULT            0x1     // 001 oversampling x 1
+#define BME688_MODE_CTRL_TEMP_PRESS_DEFAULT     0x49    // 0001001001 Forced mode, oversampling x 1 for Temp and Press
 
 // Read
 #define BME688_HUM_LSB_0         0x26   // 16bit
@@ -46,5 +54,6 @@
 /*******************************************************************
  * Function Declarations
  *******************************************************************/
+void Configi2c(void);
 void EnvSensorConfig(void);
 void EnvSensorRead(void);
