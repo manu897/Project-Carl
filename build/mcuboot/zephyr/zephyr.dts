@@ -13,7 +13,7 @@
 		zephyr,uart-mcumgr = &cdc_acm_uart;
 		zephyr,bt-mon-uart = &cdc_acm_uart;
 		zephyr,bt-c2h-uart = &cdc_acm_uart;
-		zephyr,bt-hci-rpmsg-ipc = &ipc0;
+		zephyr,bt-hci-ipc = &ipc0;
 		nordic,802154-spinel-ipc = &ipc0;
 		zephyr,ieee802154 = &ieee802154;
 		nordic,pm-ext-flash = &mx25r64;
@@ -62,6 +62,7 @@
 		ficr: ficr@ff0000 {
 			compatible = "nordic,nrf-ficr";
 			reg = < 0xff0000 0x1000 >;
+			#nordic,ficr-cells = < 0x1 >;
 			status = "okay";
 		};
 		uicr: uicr@ff8000 {
@@ -137,6 +138,7 @@
 				reg = < 0x8000 0x1000 >;
 				clock-frequency = < 0x186a0 >;
 				interrupts = < 0x8 0x1 >;
+				easydma-maxcnt-bits = < 0x10 >;
 				status = "disabled";
 			};
 			spi0: spi@8000 {
@@ -166,6 +168,7 @@
 				reg = < 0x9000 0x1000 >;
 				clock-frequency = < 0x61a80 >;
 				interrupts = < 0x9 0x1 >;
+				easydma-maxcnt-bits = < 0x10 >;
 				status = "okay";
 				pinctrl-0 = < &i2c1_default >;
 				pinctrl-1 = < &i2c1_sleep >;
@@ -223,6 +226,7 @@
 				reg = < 0xb000 0x1000 >;
 				clock-frequency = < 0x186a0 >;
 				interrupts = < 0xb 0x1 >;
+				easydma-maxcnt-bits = < 0x10 >;
 				status = "disabled";
 			};
 			spi2: spi@b000 {
@@ -248,6 +252,7 @@
 				reg = < 0xc000 0x1000 >;
 				clock-frequency = < 0x186a0 >;
 				interrupts = < 0xc 0x1 >;
+				easydma-maxcnt-bits = < 0x10 >;
 				status = "disabled";
 			};
 			spi3: spi@c000 {
@@ -294,7 +299,7 @@
 				interrupts = < 0xe 0x1 >;
 				status = "okay";
 				#io-channel-cells = < 0x1 >;
-				phandle = < 0x17 >;
+				phandle = < 0x18 >;
 			};
 			timer0: timer@f000 {
 				compatible = "nordic,nrf-timer";
@@ -313,7 +318,7 @@
 				max-bit-width = < 0x20 >;
 				interrupts = < 0x10 0x1 >;
 				prescaler = < 0x0 >;
-				phandle = < 0x13 >;
+				phandle = < 0x14 >;
 			};
 			timer2: timer@11000 {
 				compatible = "nordic,nrf-timer";
@@ -411,7 +416,7 @@
 				pinctrl-0 = < &pwm0_default >;
 				pinctrl-1 = < &pwm0_sleep >;
 				pinctrl-names = "default", "sleep";
-				phandle = < 0x16 >;
+				phandle = < 0x17 >;
 			};
 			pwm1: pwm@22000 {
 				compatible = "nordic,nrf-pwm";
@@ -459,7 +464,7 @@
 				interrupts = < 0x2a 0x1 >;
 				#mbox-cells = < 0x1 >;
 				status = "okay";
-				phandle = < 0x15 >;
+				phandle = < 0x16 >;
 			};
 			qspi: qspi@2b000 {
 				compatible = "nordic,nrf-qspi";
@@ -593,6 +598,7 @@
 				#gpio-cells = < 0x2 >;
 				status = "okay";
 				port = < 0x0 >;
+				gpiote-instance = < &gpiote >;
 				phandle = < 0xa >;
 			};
 			gpio1: gpio@842800 {
@@ -603,6 +609,7 @@
 				ngpios = < 0x10 >;
 				status = "okay";
 				port = < 0x1 >;
+				gpiote-instance = < &gpiote >;
 				phandle = < 0x6 >;
 			};
 			ieee802154: ieee802154 {
@@ -621,24 +628,22 @@
 			reg = < 0x5000d000 0x1000 >;
 			interrupts = < 0xd 0x5 >;
 			status = "okay";
-		};
-		cryptocell: crypto@50844000 {
-			compatible = "nordic,nrf-cc312";
-			reg = < 0x50844000 0x1000 >;
-			status = "okay";
-			#address-cells = < 0x1 >;
-			#size-cells = < 0x1 >;
-			cryptocell312: crypto@50845000 {
-				compatible = "arm,cryptocell-312";
-				reg = < 0x50845000 0x1000 >;
-				interrupts = < 0x44 0x1 >;
-			};
+			instance = < 0x0 >;
+			phandle = < 0x13 >;
 		};
 		gpiote1: gpiote@4002f000 {
 			compatible = "nordic,nrf-gpiote";
 			reg = < 0x4002f000 0x1000 >;
 			interrupts = < 0x2f 0x5 >;
 			status = "disabled";
+			instance = < 0x1 >;
+		};
+		cryptocell: crypto@50844000 {
+			compatible = "nordic,cryptocell", "arm,cryptocell-312";
+			reg = < 0x50844000 0x1000 >, < 0x50845000 0x1000 >;
+			reg-names = "wrapper", "core";
+			interrupts = < 0x44 0x1 >;
+			status = "okay";
 		};
 		nordic_ram_flash_controller: nordic_ram-flash-controller@0 {
 			compatible = "zephyr,sim-flash";
@@ -905,7 +910,7 @@
 		};
 		sram0_shared: memory@20070000 {
 			reg = < 0x20070000 0x10000 >;
-			phandle = < 0x14 >;
+			phandle = < 0x15 >;
 		};
 	};
 };

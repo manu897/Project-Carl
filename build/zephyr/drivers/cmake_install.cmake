@@ -1,8 +1,8 @@
-# Install script for directory: C:/ncs/v2.5.99-dev1/zephyr/drivers
+# Install script for directory: /Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/drivers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files/Zephyr-Kernel")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,101 +34,96 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/ncs/toolchains/c57af46cb7/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "/opt/nordic/ncs/toolchains/580e4ef81c/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/disk/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/disk/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/interrupt_controller/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/interrupt_controller/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/misc/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/misc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/pcie/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/pcie/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/usb/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/usb/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/usb_c/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/usb_c/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/clock_control/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/clock_control/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/console/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/console/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/entropy/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/gpio/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/gpio/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/hwinfo/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/hwinfo/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/i2c/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/i2c/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/mbox/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/mbox/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/pinctrl/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/pinctrl/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/regulator/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/regulator/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/sensor/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/sensor/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/serial/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/serial/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/spi/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/spi/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/zephyr/drivers/timer/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/zephyr/drivers/timer/cmake_install.cmake")
 endif()
 

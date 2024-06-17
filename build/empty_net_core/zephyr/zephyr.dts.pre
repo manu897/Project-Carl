@@ -1,7 +1,7 @@
-# 0 "C:/ncs/v2.5.99-dev1/zephyr/misc/empty_file.c"
+# 0 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/misc/empty_file.c"
 # 0 "<built-in>"
 # 0 "<command-line>"
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 1
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 1
 
 
 
@@ -9,34 +9,34 @@
 
 
 /dts-v1/;
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 1 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 1 3 4
 
 
 
 
 
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/common/mem.h" 1 3 4
-# 8 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 1 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/mem.h" 1 3 4
+# 8 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 1 3 4
 
 
 
 
 
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/armv8-m.dtsi" 1 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/armv8-m.dtsi" 1 3 4
 
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/common/skeleton.dtsi" 1 3 4
-# 9 "C:/ncs/v2.5.99-dev1/zephyr/dts/common/skeleton.dtsi" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/skeleton.dtsi" 1 3 4
+# 9 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/skeleton.dtsi" 3 4
 / {
  #address-cells = <1>;
  #size-cells = <1>;
  chosen { };
  aliases { };
 };
-# 4 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/armv8-m.dtsi" 2 3 4
+# 4 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/armv8-m.dtsi" 2 3 4
 
 / {
  soc {
@@ -60,44 +60,63 @@
   };
  };
 };
-# 8 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 1 3 4
+# 8 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 1 3 4
 
 
 
 
 
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/adc/adc.h" 1 3 4
-# 8 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 1 3 4
-# 10 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/dt-util.h" 1 3 4
-# 19 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/dt-util.h" 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_macro.h" 1 3 4
-# 34 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_macro.h" 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_internal.h" 1 3 4
-# 18 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_internal.h" 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_loops.h" 1 3 4
-# 19 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
-# 35 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/sys/util_macro.h" 2 3 4
-# 20 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/dt-util.h" 2 3 4
-# 11 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 2 3 4
-# 9 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/gpio/gpio.h" 1 3 4
-# 10 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/i2c/i2c.h" 1 3 4
-# 11 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/pinctrl/nrf-pinctrl.h" 1 3 4
-# 12 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/pwm/pwm.h" 1 3 4
-# 13 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/adc/adc.h" 1 3 4
+# 8 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 1 3 4
+# 10 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/dt-util.h" 1 3 4
+# 19 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/dt-util.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_macro.h" 1 3 4
+# 34 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_macro.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 1 3 4
+# 18 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_loops.h" 1 3 4
+# 1083 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_loops.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_listify.h" 1 3 4
+# 1084 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_loops.h" 2 3 4
+# 19 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
+# 153 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal_is_eq.h" 1 3 4
+# 154 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
+# 184 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal_util_inc.h" 1 3 4
+# 185 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/common/freq.h" 1 3 4
-# 15 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/override.dtsi" 1 3 4
-# 16 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 2 3 4
-# 24 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf_common.dtsi" 3 4
+
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal_util_dec.h" 1 3 4
+# 188 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
+
+
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal_util_x2.h" 1 3 4
+# 191 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_internal.h" 2 3 4
+# 35 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/sys/util_macro.h" 2 3 4
+# 20 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/dt-util.h" 2 3 4
+# 11 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/adc/nrf-adc.h" 2 3 4
+# 9 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/gpio/gpio.h" 1 3 4
+# 10 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/i2c/i2c.h" 1 3 4
+# 11 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/input/input-event-codes.h" 1 3 4
+# 12 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/pinctrl/nrf-pinctrl.h" 1 3 4
+# 13 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/include/zephyr/dt-bindings/pwm/pwm.h" 1 3 4
+# 14 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/freq.h" 1 3 4
+# 16 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/override.dtsi" 1 3 4
+# 17 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 2 3 4
+# 25 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/common/nordic/nrf_common.dtsi" 3 4
 / {
  pinctrl: pin-controller {
 
@@ -120,15 +139,7 @@
   #pwm-cells = <3>;
  };
 };
-
-&systick {
-
-
-
-
- status = "disabled";
-};
-# 9 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 2 3 4
+# 9 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet.dtsi" 2 3 4
 
 / {
  chosen {
@@ -158,6 +169,7 @@
   ficr: ficr@1ff0000 {
    compatible = "nordic,nrf-ficr";
    reg = <0x01ff0000 0x1000>;
+   #nordic,ficr-cells = <1>;
    status = "okay";
   };
 
@@ -231,11 +243,12 @@
    status = "okay";
   };
 
-  gpiote: gpiote@4100a000 {
+  gpiote: gpiote0: gpiote@4100a000 {
    compatible = "nordic,nrf-gpiote";
    reg = <0x4100a000 0x1000>;
    interrupts = <10 5>;
    status = "disabled";
+   instance = <0>;
   };
 
   wdt: wdt0: watchdog@4100b000 {
@@ -315,6 +328,7 @@
    reg = <0x41013000 0x1000>;
    clock-frequency = <100000>;
    interrupts = <19 1>;
+   easydma-maxcnt-bits = <16>;
    status = "disabled";
   };
 
@@ -440,6 +454,7 @@
    #gpio-cells = <2>;
    status = "disabled";
    port = <0>;
+   gpiote-instance = <&gpiote>;
   };
 
   gpio1: gpio@418c0800 {
@@ -450,6 +465,7 @@
    ngpios = <16>;
    status = "disabled";
    port = <1>;
+   gpiote-instance = <&gpiote>;
   };
  };
 
@@ -469,7 +485,12 @@
 &nvic {
  arm,num-irq-priority-bits = <3>;
 };
-# 9 "C:/ncs/v2.5.99-dev1/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 2 3 4
+
+&systick {
+
+ status = "disabled";
+};
+# 9 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/dts/arm/nordic/nrf5340_cpunet_qkaa.dtsi" 2 3 4
 
 &flash1 {
  reg = <0x01000000 ((256) * 1024)>;
@@ -493,8 +514,8 @@
         "nordic,nrf53", "simple-bus";
  };
 };
-# 9 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet-pinctrl.dtsi" 1
+# 9 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet-pinctrl.dtsi" 1
 
 
 
@@ -521,9 +542,8 @@
  };
 
 };
-# 10 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/include/zephyr/dt-bindings/input/input-event-codes.h" 1 3 4
-# 11 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
+# 10 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
+
 
 / {
  model = "Nordic Thingy53 NRF5340 Network";
@@ -535,7 +555,7 @@
   zephyr,uart-mcumgr = &uart0;
   zephyr,bt-mon-uart = &uart0;
   zephyr,bt-c2h-uart = &uart0;
-  zephyr,bt-hci-rpmsg-ipc = &ipc0;
+  zephyr,bt-hci-ipc = &ipc0;
   nordic,802154-spinel-ipc = &ipc0;
   zephyr,sram = &sram1;
   zephyr,flash = &flash1;
@@ -662,8 +682,8 @@
 };
 
 
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi" 1
-# 14 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi"
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi" 1
+# 14 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_shared_sram_planning_conf.dtsi"
 / {
  chosen {
 
@@ -681,6 +701,6 @@
   };
  };
 };
-# 150 "C:/ncs/v2.5.99-dev1/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
+# 150 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/boards/arm/thingy53_nrf5340/thingy53_nrf5340_cpunet.dts" 2
 # 0 "<command-line>" 2
-# 1 "C:/ncs/v2.5.99-dev1/zephyr/misc/empty_file.c"
+# 1 "/Users/fwdev/Desktop/Github/Project-Carl/external/zephyr/misc/empty_file.c"

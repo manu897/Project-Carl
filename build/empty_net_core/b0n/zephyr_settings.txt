@@ -6,6 +6,6 @@
 # and/or the west manifest file.
 #
 # See the Modules guide for more information.
-"BOARD_ROOT":"C:/ncs/v2.5.99-dev1/nrf"
-"DTS_ROOT":"C:/ncs/v2.5.99-dev1/nrf"
-"MODULE_EXT_ROOT":"C:/ncs/v2.5.99-dev1/nrf"
+"BOARD_ROOT":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf"
+"DTS_ROOT":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf"
+"MODULE_EXT_ROOT":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf"

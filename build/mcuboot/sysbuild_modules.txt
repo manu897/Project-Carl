@@ -1,1 +1,1 @@
-"nrf":"C:/ncs/v2.5.99-dev1/nrf":"C:/ncs/v2.5.99-dev1/nrf/sysbuild"
+"nrf":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf/sysbuild"

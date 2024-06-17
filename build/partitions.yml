@@ -1,8 +1,8 @@
 app:
-  address: 0x1c000
+  address: 0x10200
   end_address: 0xf0000
   region: flash_primary
-  size: 0xd4000
+  size: 0xdfe00
 external_flash:
   address: 0x120000
   device: MX25R64
@@ -24,7 +24,6 @@ mcuboot_primary:
   end_address: 0xf0000
   orig_span: &id001
   - mcuboot_pad
-  - tfm
   - app
   region: flash_primary
   size: 0xe0000
@@ -39,7 +38,6 @@ mcuboot_primary_app:
   address: 0x10200
   end_address: 0xf0000
   orig_span: &id002
-  - tfm
   - app
   region: flash_primary
   size: 0xdfe00
@@ -56,23 +54,6 @@ mcuboot_secondary_1:
   end_address: 0x120000
   region: external_flash
   size: 0x40000
-mcuboot_sram:
-  address: 0x20002000
-  end_address: 0x20080000
-  orig_span: &id003
-  - rpmsg_nrf53_sram
-  - sram_primary
-  - tfm_sram
-  region: sram_primary
-  size: 0x7e000
-  span: *id003
-nonsecure_storage:
-  address: 0xf0000
-  end_address: 0x100000
-  region: flash_primary
-  size: 0x10000
-  span:
-  - settings_storage
 otp:
   address: 0xff8100
   end_address: 0xff83fc
@@ -101,55 +82,8 @@ settings_storage:
   end_address: 0x100000
   region: flash_primary
   size: 0x10000
-sram_nonsecure:
-  address: 0x2000a000
-  end_address: 0x20080000
-  orig_span: &id004
-  - sram_primary
-  - rpmsg_nrf53_sram
-  region: sram_primary
-  size: 0x76000
-  span: *id004
 sram_primary:
-  address: 0x2000a000
+  address: 0x20002000
   end_address: 0x20070000
   region: sram_primary
-  size: 0x66000
-sram_secure:
-  address: 0x20002000
-  end_address: 0x2000a000
-  orig_span: &id005
-  - tfm_sram
-  region: sram_primary
-  size: 0x8000
-  span: *id005
-tfm:
-  address: 0x10200
-  end_address: 0x1c000
-  region: flash_primary
-  size: 0xbe00
-tfm_nonsecure:
-  address: 0x1c000
-  end_address: 0xf0000
-  region: flash_primary
-  size: 0xd4000
-  span:
-  - app
-tfm_secure:
-  address: 0x10000
-  end_address: 0x1c000
-  region: flash_primary
-  size: 0xc000
-  span:
-  - mcuboot_pad
-  - tfm
-tfm_sram:
-  address: 0x20002000
-  end_address: 0x2000a000
-  inside:
-  - sram_secure
-  placement:
-    after:
-    - start
-  region: sram_primary
-  size: 0x8000
+  size: 0x6e000

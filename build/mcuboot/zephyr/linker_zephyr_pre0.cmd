@@ -1,11 +1,11 @@
  OUTPUT_FORMAT("elf32-littlearm")
-_region_min_align = 4;
+_region_min_align = 32;
 MEMORY
     {
     FLASH (rx) : ORIGIN = 0x0, LENGTH = 0x10000
-    RAM (wx) : ORIGIN = 0x20002000, LENGTH = 0x7e000
+    RAM (wx) : ORIGIN = 0x20002000, LENGTH = 0x6e000
    
-    IDT_LIST (wx) : ORIGIN = 0xFFFFF7FF, LENGTH = 2K
+    IDT_LIST (wx) : ORIGIN = 0xFFFF7FFF, LENGTH = 32K
     }
 ENTRY("__start")
 SECTIONS
@@ -45,6 +45,7 @@ SECTIONS
     rom_start :
  {
 HIDDEN(__rom_start_address = .);
+FILL(0x00);
 . += 0x0 - (. - __rom_start_address);
 . = ALIGN(4);
 . = ALIGN( 1 << LOG2CEIL(4 * 32) );
@@ -207,7 +208,10 @@ __ramfunc_load_start = LOADADDR(.ramfunc);
  k_sem_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_sem_list_start = .; *(SORT_BY_NAME(._k_sem.static.*)); _k_sem_list_end = .; } > RAM AT > FLASH
  k_event_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_event_list_start = .; *(SORT_BY_NAME(._k_event.static.*)); _k_event_list_end = .; } > RAM AT > FLASH
  k_queue_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_queue_list_start = .; *(SORT_BY_NAME(._k_queue.static.*)); _k_queue_list_end = .; } > RAM AT > FLASH
+ k_fifo_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_fifo_list_start = .; *(SORT_BY_NAME(._k_fifo.static.*)); _k_fifo_list_end = .; } > RAM AT > FLASH
+ k_lifo_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_lifo_list_start = .; *(SORT_BY_NAME(._k_lifo.static.*)); _k_lifo_list_end = .; } > RAM AT > FLASH
  k_condvar_area : ALIGN_WITH_INPUT SUBALIGN(4) { _k_condvar_list_start = .; *(SORT_BY_NAME(._k_condvar.static.*)); _k_condvar_list_end = .; } > RAM AT > FLASH
+ sys_mem_blocks_ptr_area : ALIGN_WITH_INPUT SUBALIGN(4) { _sys_mem_blocks_ptr_list_start = .; *(SORT_BY_NAME(._sys_mem_blocks_ptr.static.*)); _sys_mem_blocks_ptr_list_end = .; } > RAM AT > FLASH
  net_buf_pool_area : ALIGN_WITH_INPUT SUBALIGN(4) { _net_buf_pool_list_start = .; KEEP(*(SORT_BY_NAME(._net_buf_pool.static.*))); _net_buf_pool_list_end = .; } > RAM AT > FLASH
  usb_descriptor : ALIGN_WITH_INPUT SUBALIGN(1)
  {
@@ -235,8 +239,9 @@ __ramfunc_load_start = LOADADDR(.ramfunc);
         *(".noinit.*")
  *(".kernel_noinit.*")
         } > RAM AT > RAM
-    __kernel_ram_end = 0x20002000 + 0x7e000;
+    __kernel_ram_end = 0x20002000 + 0x6e000;
     __kernel_ram_size = __kernel_ram_end - __kernel_ram_start;
+mcuboot_bs_custom_handlers_area : SUBALIGN(4) { _mcuboot_bs_custom_handlers_list_start = .; KEEP(*(SORT_BY_NAME(._mcuboot_bs_custom_handlers.static.*))); _mcuboot_bs_custom_handlers_list_end = .; } > FLASH
 .intList :
 {
  KEEP(*(.irq_info*))

@@ -185,6 +185,56 @@ static inline int sdhc_get_host_props(const struct device * dev, struct sdhc_hos
 #endif
 
 
+extern int z_impl_sdhc_enable_interrupt(const struct device * dev, sdhc_interrupt_cb_t callback, int sources, void * user_data);
+
+__pinned_func
+static inline int sdhc_enable_interrupt(const struct device * dev, sdhc_interrupt_cb_t callback, int sources, void * user_data)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		union { uintptr_t x; sdhc_interrupt_cb_t val; } parm1 = { .val = callback };
+		union { uintptr_t x; int val; } parm2 = { .val = sources };
+		union { uintptr_t x; void * val; } parm3 = { .val = user_data };
+		return (int) arch_syscall_invoke4(parm0.x, parm1.x, parm2.x, parm3.x, K_SYSCALL_SDHC_ENABLE_INTERRUPT);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_sdhc_enable_interrupt(dev, callback, sources, user_data);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define sdhc_enable_interrupt(dev, callback, sources, user_data) ({ 	int syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_SDHC_ENABLE_INTERRUPT, sdhc_enable_interrupt, dev, callback, sources, user_data); 	syscall__retval = sdhc_enable_interrupt(dev, callback, sources, user_data); 	sys_port_trace_syscall_exit(K_SYSCALL_SDHC_ENABLE_INTERRUPT, sdhc_enable_interrupt, dev, callback, sources, user_data, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern int z_impl_sdhc_disable_interrupt(const struct device * dev, int sources);
+
+__pinned_func
+static inline int sdhc_disable_interrupt(const struct device * dev, int sources)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		union { uintptr_t x; int val; } parm1 = { .val = sources };
+		return (int) arch_syscall_invoke2(parm0.x, parm1.x, K_SYSCALL_SDHC_DISABLE_INTERRUPT);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_sdhc_disable_interrupt(dev, sources);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define sdhc_disable_interrupt(dev, sources) ({ 	int syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_SDHC_DISABLE_INTERRUPT, sdhc_disable_interrupt, dev, sources); 	syscall__retval = sdhc_disable_interrupt(dev, sources); 	sys_port_trace_syscall_exit(K_SYSCALL_SDHC_DISABLE_INTERRUPT, sdhc_disable_interrupt, dev, sources, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

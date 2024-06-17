@@ -1,8 +1,8 @@
-# Install script for directory: C:/ncs/v2.5.99-dev1/zephyr
+# Install script for directory: /Users/fwdev/Desktop/Github/Project-Carl/external/zephyr
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files/Zephyr-Kernel")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,236 +34,236 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/ncs/toolchains/c57af46cb7/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "/opt/nordic/ncs/toolchains/580e4ef81c/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/arch/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/arch/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/lib/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/lib/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/soc/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/soc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/boards/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/boards/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/subsys/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/subsys/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/drivers/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/drivers/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/wfa-qt-control-app/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/mcuboot/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/mcuboot/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/mbedtls/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/mbedtls/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/trusted-firmware-m/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/trusted-firmware-m/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/cjson/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/cjson/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/azure-sdk-for-c/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/azure-sdk-for-c/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/cirrus-logic/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/cirrus-logic/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/openthread/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/openthread/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/memfault-firmware-sdk/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/memfault-firmware-sdk/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/canopennode/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/canopennode/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/chre/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/chre/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/lz4/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/cmsis/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nanopb/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/fatfs/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/zscilib/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/hal_nordic/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/cmsis/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/st/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/cmsis-dsp/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/hal_wurthelektronik/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/cmsis-nn/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/libmetal/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/fatfs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/liblc3/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/hal_nordic/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/littlefs/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/st/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/loramac-node/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/hal_wurthelektronik/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/lvgl/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/libmetal/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/lz4/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/liblc3/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/mipi-sys-t/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/littlefs/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nanopb/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/loramac-node/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf_hw_models/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/lvgl/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/open-amp/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/mipi-sys-t/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/picolibc/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf_hw_models/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/segger/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/open-amp/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/tinycrypt/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/picolibc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/TraceRecorder/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/segger/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/uoscore-uedhoc/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/tinycrypt/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/zcbor/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/uoscore-uedhoc/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/zscilib/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/zcbor/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrfxlib/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrfxlib/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/connectedhomeip/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/connectedhomeip/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/kernel/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/kernel/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/cmake/flash/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/cmake/flash/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/cmake/usage/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/cmake/usage/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/zephyr/cmake/reports/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/zephyr/cmake/reports/cmake_install.cmake")
 endif()
 

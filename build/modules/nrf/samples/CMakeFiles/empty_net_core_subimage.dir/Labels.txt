@@ -1,13 +1,13 @@
 # Target labels
  empty_net_core_subimage
 # Source files and their labels
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage-complete.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-build.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-configure.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-download.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-install.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-mkdir.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-patch.rule
-C:/Users/manid/Downloads/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-update.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/CMakeFiles/empty_net_core_subimage-complete.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-build.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-configure.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-download.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-install.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-mkdir.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-patch.rule
+/Users/fwdev/Desktop/Github/Project-Carl/build/modules/nrf/samples/empty_net_core_subimage-prefix/src/empty_net_core_subimage-stamp/empty_net_core_subimage-update.rule

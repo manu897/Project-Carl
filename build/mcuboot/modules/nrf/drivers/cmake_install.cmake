@@ -1,8 +1,8 @@
-# Install script for directory: C:/ncs/v2.5.99-dev1/nrf/drivers
+# Install script for directory: /Users/fwdev/Desktop/Github/Project-Carl/external/nrf/drivers
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files/Zephyr-Kernel")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,14 +34,14 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/ncs/toolchains/c57af46cb7/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "/opt/nordic/ncs/toolchains/580e4ef81c/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/manid/Downloads/Project-Carl/build/mcuboot/modules/nrf/drivers/hw_cc3xx/cmake_install.cmake")
-  include("C:/Users/manid/Downloads/Project-Carl/build/mcuboot/modules/nrf/drivers/entropy/cmake_install.cmake")
-  include("C:/Users/manid/Downloads/Project-Carl/build/mcuboot/modules/nrf/drivers/serial/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/mcuboot/modules/nrf/drivers/hw_cc3xx/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/mcuboot/modules/nrf/drivers/entropy/cmake_install.cmake")
+  include("/Users/fwdev/Desktop/Github/Project-Carl/build/mcuboot/modules/nrf/drivers/serial/cmake_install.cmake")
 
 endif()
 

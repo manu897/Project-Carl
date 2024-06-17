@@ -24,10 +24,10 @@ case K_OBJ_ZTEST_SUITE_NODE: ret = "ztest_suite_node"; break;
 #ifdef CONFIG_ZTEST
 case K_OBJ_ZTEST_SUITE_STATS: ret = "ztest_suite_stats"; break;
 #endif
-#ifdef CONFIG_ZTEST_NEW_API
+#ifdef CONFIG_ZTEST
 case K_OBJ_ZTEST_UNIT_TEST: ret = "ztest_unit_test"; break;
 #endif
-#ifdef CONFIG_ZTEST_NEW_API
+#ifdef CONFIG_ZTEST
 case K_OBJ_ZTEST_TEST_RULE: ret = "ztest_test_rule"; break;
 #endif
 #ifdef CONFIG_RTIO
@@ -40,7 +40,6 @@ case K_OBJ_RTIO_IODEV: ret = "rtio_iodev"; break;
 case K_OBJ_SENSOR_DECODER_API: ret = "sensor_decoder_api"; break;
 #endif
 /* Driver subsystems */
-case K_OBJ_DRIVER_ENTROPY: ret = "entropy driver"; break;
 case K_OBJ_DRIVER_GPIO: ret = "gpio driver"; break;
 case K_OBJ_DRIVER_I2C: ret = "i2c driver"; break;
 case K_OBJ_DRIVER_MBOX: ret = "mbox driver"; break;
@@ -52,6 +51,8 @@ case K_OBJ_DRIVER_ADC: ret = "adc driver"; break;
 case K_OBJ_DRIVER_AUXDISPLAY: ret = "auxdisplay driver"; break;
 case K_OBJ_DRIVER_BBRAM: ret = "bbram driver"; break;
 case K_OBJ_DRIVER_CAN: ret = "can driver"; break;
+case K_OBJ_DRIVER_CELLULAR: ret = "cellular driver"; break;
+case K_OBJ_DRIVER_CHARGER: ret = "charger driver"; break;
 case K_OBJ_DRIVER_COREDUMP: ret = "coredump driver"; break;
 case K_OBJ_DRIVER_COUNTER: ret = "counter driver"; break;
 case K_OBJ_DRIVER_DAC: ret = "dac driver"; break;
@@ -61,11 +62,13 @@ case K_OBJ_DRIVER_EDAC: ret = "edac driver"; break;
 case K_OBJ_DRIVER_EEPROM: ret = "eeprom driver"; break;
 case K_OBJ_DRIVER_FUEL_GAUGE_EMUL: ret = "fuel_gauge_emul driver"; break;
 case K_OBJ_DRIVER_EMUL_SENSOR_BACKEND_API: ret = "emul_sensor_backend_api driver"; break;
+case K_OBJ_DRIVER_ENTROPY: ret = "entropy driver"; break;
 case K_OBJ_DRIVER_ESPI: ret = "espi driver"; break;
 case K_OBJ_DRIVER_ESPI_SAF: ret = "espi_saf driver"; break;
 case K_OBJ_DRIVER_FLASH: ret = "flash driver"; break;
 case K_OBJ_DRIVER_FPGA: ret = "fpga driver"; break;
 case K_OBJ_DRIVER_FUEL_GAUGE: ret = "fuel_gauge driver"; break;
+case K_OBJ_DRIVER_GNSS: ret = "gnss driver"; break;
 case K_OBJ_DRIVER_HWSPINLOCK: ret = "hwspinlock driver"; break;
 case K_OBJ_DRIVER_I2S: ret = "i2s driver"; break;
 case K_OBJ_DRIVER_I3C: ret = "i3c driver"; break;
@@ -91,6 +94,7 @@ case K_OBJ_DRIVER_WDT: ret = "wdt driver"; break;
 case K_OBJ_DRIVER_CAN_TRANSCEIVER: ret = "can_transceiver driver"; break;
 case K_OBJ_DRIVER_UART_MUX: ret = "uart_mux driver"; break;
 case K_OBJ_DRIVER_ITS: ret = "its driver"; break;
+case K_OBJ_DRIVER_TGPIO: ret = "tgpio driver"; break;
 case K_OBJ_DRIVER_PCIE_CTRL: ret = "pcie_ctrl driver"; break;
 case K_OBJ_DRIVER_SVC: ret = "svc driver"; break;
 case K_OBJ_DRIVER_BC12_EMUL: ret = "bc12_emul driver"; break;

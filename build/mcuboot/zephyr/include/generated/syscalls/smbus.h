@@ -68,30 +68,6 @@ static inline int smbus_get_config(const struct device * dev, uint32_t * dev_con
 #endif
 
 
-extern int z_impl_smbus_smbalert_set_cb(const struct device * dev, struct smbus_callback * cb);
-
-__pinned_func
-static inline int smbus_smbalert_set_cb(const struct device * dev, struct smbus_callback * cb)
-{
-#ifdef CONFIG_USERSPACE
-	if (z_syscall_trap()) {
-		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
-		union { uintptr_t x; struct smbus_callback * val; } parm1 = { .val = cb };
-		return (int) arch_syscall_invoke2(parm0.x, parm1.x, K_SYSCALL_SMBUS_SMBALERT_SET_CB);
-	}
-#endif
-	compiler_barrier();
-	return z_impl_smbus_smbalert_set_cb(dev, cb);
-}
-
-#if defined(CONFIG_TRACING_SYSCALL)
-#ifndef DISABLE_SYSCALL_TRACING
-
-#define smbus_smbalert_set_cb(dev, cb) ({ 	int syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_SMBUS_SMBALERT_SET_CB, smbus_smbalert_set_cb, dev, cb); 	syscall__retval = smbus_smbalert_set_cb(dev, cb); 	sys_port_trace_syscall_exit(K_SYSCALL_SMBUS_SMBALERT_SET_CB, smbus_smbalert_set_cb, dev, cb, syscall__retval); 	syscall__retval; })
-#endif
-#endif
-
-
 extern int z_impl_smbus_smbalert_remove_cb(const struct device * dev, struct smbus_callback * cb);
 
 __pinned_func
@@ -112,30 +88,6 @@ static inline int smbus_smbalert_remove_cb(const struct device * dev, struct smb
 #ifndef DISABLE_SYSCALL_TRACING
 
 #define smbus_smbalert_remove_cb(dev, cb) ({ 	int syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_SMBUS_SMBALERT_REMOVE_CB, smbus_smbalert_remove_cb, dev, cb); 	syscall__retval = smbus_smbalert_remove_cb(dev, cb); 	sys_port_trace_syscall_exit(K_SYSCALL_SMBUS_SMBALERT_REMOVE_CB, smbus_smbalert_remove_cb, dev, cb, syscall__retval); 	syscall__retval; })
-#endif
-#endif
-
-
-extern int z_impl_smbus_host_notify_set_cb(const struct device * dev, struct smbus_callback * cb);
-
-__pinned_func
-static inline int smbus_host_notify_set_cb(const struct device * dev, struct smbus_callback * cb)
-{
-#ifdef CONFIG_USERSPACE
-	if (z_syscall_trap()) {
-		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
-		union { uintptr_t x; struct smbus_callback * val; } parm1 = { .val = cb };
-		return (int) arch_syscall_invoke2(parm0.x, parm1.x, K_SYSCALL_SMBUS_HOST_NOTIFY_SET_CB);
-	}
-#endif
-	compiler_barrier();
-	return z_impl_smbus_host_notify_set_cb(dev, cb);
-}
-
-#if defined(CONFIG_TRACING_SYSCALL)
-#ifndef DISABLE_SYSCALL_TRACING
-
-#define smbus_host_notify_set_cb(dev, cb) ({ 	int syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_SMBUS_HOST_NOTIFY_SET_CB, smbus_host_notify_set_cb, dev, cb); 	syscall__retval = smbus_host_notify_set_cb(dev, cb); 	sys_port_trace_syscall_exit(K_SYSCALL_SMBUS_HOST_NOTIFY_SET_CB, smbus_host_notify_set_cb, dev, cb, syscall__retval); 	syscall__retval; })
 #endif
 #endif
 

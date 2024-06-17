@@ -9,14 +9,17 @@
 /* #undef ZEPHYR_VERSION_CODE */
 /* #undef ZEPHYR_VERSION */
 
-#define APPVERSION          0x10B6300
-#define APP_VERSION_NUMBER  0x10B63
-#define APP_VERSION_MAJOR   1
-#define APP_VERSION_MINOR   11
-#define APP_PATCHLEVEL      99
-#define APP_VERSION_STRING  "1.11.99-dev"
+#define APPVERSION                   0x2010000
+#define APP_VERSION_NUMBER           0x20100
+#define APP_VERSION_MAJOR            2
+#define APP_VERSION_MINOR            1
+#define APP_PATCHLEVEL               0
+#define APP_TWEAK                    0
+#define APP_VERSION_STRING           "2.1.0-dev"
+#define APP_VERSION_EXTENDED_STRING  "2.1.0-dev+0"
+#define APP_VERSION_TWEAK_STRING     "2.1.0+0"
 
-#define APP_BUILD_VERSION adab597a0eb0
+#define APP_BUILD_VERSION v2.0.99-ncs1-1
 
 
 #endif /* _APP_VERSION_H_ */

@@ -6,17 +6,20 @@
  * alternatively user defined BUILD_VERSION.
  */
 
-#define ZEPHYR_VERSION_CODE 197731
+#define ZEPHYR_VERSION_CODE 197987
 #define ZEPHYR_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
 
-#define KERNELVERSION          0x3046300
-#define KERNEL_VERSION_NUMBER  0x30463
-#define KERNEL_VERSION_MAJOR   3
-#define KERNEL_VERSION_MINOR   4
-#define KERNEL_PATCHLEVEL      99
-#define KERNEL_VERSION_STRING  "3.4.99"
+#define KERNELVERSION                   0x3056300
+#define KERNEL_VERSION_NUMBER           0x30563
+#define KERNEL_VERSION_MAJOR            3
+#define KERNEL_VERSION_MINOR            5
+#define KERNEL_PATCHLEVEL               99
+#define KERNEL_TWEAK                    0
+#define KERNEL_VERSION_STRING           "3.5.99"
+#define KERNEL_VERSION_EXTENDED_STRING  "3.5.99+0"
+#define KERNEL_VERSION_TWEAK_STRING     "3.5.99+0"
 
-#define BUILD_VERSION 1687aaaac27c
-#include <ncs_version.h>
+#define BUILD_VERSION v3.5.99-ncs1-1
+
 
 #endif /* _KERNEL_VERSION_H_ */

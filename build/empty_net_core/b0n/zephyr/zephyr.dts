@@ -13,7 +13,7 @@
 		zephyr,uart-mcumgr = &uart0;
 		zephyr,bt-mon-uart = &uart0;
 		zephyr,bt-c2h-uart = &uart0;
-		zephyr,bt-hci-rpmsg-ipc = &ipc0;
+		zephyr,bt-hci-ipc = &ipc0;
 		nordic,802154-spinel-ipc = &ipc0;
 		zephyr,sram = &sram1;
 		zephyr,flash = &flash1;
@@ -52,6 +52,7 @@
 		ficr: ficr@1ff0000 {
 			compatible = "nordic,nrf-ficr";
 			reg = < 0x1ff0000 0x1000 >;
+			#nordic,ficr-cells = < 0x1 >;
 			status = "okay";
 		};
 		uicr: uicr@1ff8000 {
@@ -116,11 +117,13 @@
 			interrupts = < 0x9 0x1 >;
 			status = "okay";
 		};
-		gpiote: gpiote@4100a000 {
+		gpiote: gpiote0: gpiote@4100a000 {
 			compatible = "nordic,nrf-gpiote";
 			reg = < 0x4100a000 0x1000 >;
 			interrupts = < 0xa 0x5 >;
 			status = "okay";
+			instance = < 0x0 >;
+			phandle = < 0x4 >;
 		};
 		wdt: wdt0: watchdog@4100b000 {
 			compatible = "nordic,nrf-wdt";
@@ -177,7 +180,7 @@
 			interrupts = < 0x12 0x1 >;
 			#mbox-cells = < 0x1 >;
 			status = "okay";
-			phandle = < 0x6 >;
+			phandle = < 0x7 >;
 		};
 		i2c0: i2c@41013000 {
 			compatible = "nordic,nrf-twim";
@@ -186,6 +189,7 @@
 			reg = < 0x41013000 0x1000 >;
 			clock-frequency = < 0x186a0 >;
 			interrupts = < 0x13 0x1 >;
+			easydma-maxcnt-bits = < 0x10 >;
 			status = "disabled";
 		};
 		spi0: spi@41013000 {
@@ -229,7 +233,7 @@
 			max-bit-width = < 0x20 >;
 			interrupts = < 0x18 0x1 >;
 			prescaler = < 0x0 >;
-			phandle = < 0x4 >;
+			phandle = < 0x5 >;
 		};
 		timer2: timer@41019000 {
 			compatible = "nordic,nrf-timer";
@@ -319,7 +323,8 @@
 			#gpio-cells = < 0x2 >;
 			status = "okay";
 			port = < 0x0 >;
-			phandle = < 0x8 >;
+			gpiote-instance = < &gpiote >;
+			phandle = < 0x9 >;
 		};
 		gpio1: gpio@418c0800 {
 			compatible = "nordic,nrf-gpio";
@@ -329,7 +334,8 @@
 			ngpios = < 0x10 >;
 			status = "okay";
 			port = < 0x1 >;
-			phandle = < 0x7 >;
+			gpiote-instance = < &gpiote >;
+			phandle = < 0x8 >;
 		};
 	};
 	pinctrl: pin-controller {
@@ -434,7 +440,7 @@
 		ranges;
 		sram0_shared: memory@20070000 {
 			reg = < 0x20070000 0x10000 >;
-			phandle = < 0x5 >;
+			phandle = < 0x6 >;
 		};
 	};
 };

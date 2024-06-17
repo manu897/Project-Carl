@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage-complete.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/CMakeFiles/b0n_subimage-complete.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-build.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-build.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-configure.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-configure.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-download.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-download.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-install.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-install.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-mkdir.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-mkdir.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-patch.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-patch.rule"
 		},
 		{
-			"file" : "C:/Users/manid/Downloads/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-update.rule"
+			"file" : "/Users/fwdev/Desktop/Github/Project-Carl/build/empty_net_core/modules/nrf/samples/b0n_subimage-prefix/src/b0n_subimage-stamp/b0n_subimage-update.rule"
 		}
 	],
 	"target" : 

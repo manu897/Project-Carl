@@ -1,1 +1,1 @@
-osource "C:/ncs/v2.5.99-dev1/nrf/boards/shields/*/Kconfig.defconfig"
+osource "/Users/fwdev/Desktop/Github/Project-Carl/external/nrf/boards/shields/*/Kconfig.defconfig"

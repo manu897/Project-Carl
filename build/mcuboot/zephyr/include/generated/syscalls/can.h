@@ -552,6 +552,190 @@ static inline int can_recover(const struct device * dev, k_timeout_t timeout)
 #endif
 
 
+extern uint32_t z_impl_can_stats_get_bit_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_bit_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_BIT_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_bit_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_bit_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_BIT_ERRORS, can_stats_get_bit_errors, dev); 	syscall__retval = can_stats_get_bit_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_BIT_ERRORS, can_stats_get_bit_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_bit0_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_bit0_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_BIT0_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_bit0_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_bit0_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_BIT0_ERRORS, can_stats_get_bit0_errors, dev); 	syscall__retval = can_stats_get_bit0_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_BIT0_ERRORS, can_stats_get_bit0_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_bit1_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_bit1_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_BIT1_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_bit1_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_bit1_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_BIT1_ERRORS, can_stats_get_bit1_errors, dev); 	syscall__retval = can_stats_get_bit1_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_BIT1_ERRORS, can_stats_get_bit1_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_stuff_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_stuff_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_STUFF_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_stuff_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_stuff_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_STUFF_ERRORS, can_stats_get_stuff_errors, dev); 	syscall__retval = can_stats_get_stuff_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_STUFF_ERRORS, can_stats_get_stuff_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_crc_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_crc_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_CRC_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_crc_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_crc_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_CRC_ERRORS, can_stats_get_crc_errors, dev); 	syscall__retval = can_stats_get_crc_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_CRC_ERRORS, can_stats_get_crc_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_form_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_form_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_FORM_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_form_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_form_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_FORM_ERRORS, can_stats_get_form_errors, dev); 	syscall__retval = can_stats_get_form_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_FORM_ERRORS, can_stats_get_form_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_ack_errors(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_ack_errors(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_ACK_ERRORS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_ack_errors(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_ack_errors(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_ACK_ERRORS, can_stats_get_ack_errors, dev); 	syscall__retval = can_stats_get_ack_errors(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_ACK_ERRORS, can_stats_get_ack_errors, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
+extern uint32_t z_impl_can_stats_get_rx_overruns(const struct device * dev);
+
+__pinned_func
+static inline uint32_t can_stats_get_rx_overruns(const struct device * dev)
+{
+#ifdef CONFIG_USERSPACE
+	if (z_syscall_trap()) {
+		union { uintptr_t x; const struct device * val; } parm0 = { .val = dev };
+		return (uint32_t) arch_syscall_invoke1(parm0.x, K_SYSCALL_CAN_STATS_GET_RX_OVERRUNS);
+	}
+#endif
+	compiler_barrier();
+	return z_impl_can_stats_get_rx_overruns(dev);
+}
+
+#if defined(CONFIG_TRACING_SYSCALL)
+#ifndef DISABLE_SYSCALL_TRACING
+
+#define can_stats_get_rx_overruns(dev) ({ 	uint32_t syscall__retval; 	sys_port_trace_syscall_enter(K_SYSCALL_CAN_STATS_GET_RX_OVERRUNS, can_stats_get_rx_overruns, dev); 	syscall__retval = can_stats_get_rx_overruns(dev); 	sys_port_trace_syscall_exit(K_SYSCALL_CAN_STATS_GET_RX_OVERRUNS, can_stats_get_rx_overruns, dev, syscall__retval); 	syscall__retval; })
+#endif
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

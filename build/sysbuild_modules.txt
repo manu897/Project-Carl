@@ -1,1 +1,1 @@
-"nrf":"/opt/nordic/ncs/v2.6.0/nrf":"/opt/nordic/ncs/v2.6.0/nrf/sysbuild"
+"nrf":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf":"/Users/fwdev/Desktop/Github/Project-Carl/external/nrf/sysbuild"
