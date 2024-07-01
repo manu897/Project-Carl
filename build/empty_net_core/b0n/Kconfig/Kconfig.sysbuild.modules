@@ -1,6 +1,0 @@
-menu "nrf (/Users/fwdev/Desktop/Github/Project-Carl/external/nrf)"
-osource "/Users/fwdev/Desktop/Github/Project-Carl/external/nrf/sysbuild/Kconfig.sysbuild"
-config ZEPHYR_NRF_MODULE
-	bool
-	default y
-endmenu

@@ -10,11 +10,15 @@
 // #include <zephyr/drivers/i2c.h>
 // #include <zephyr/logging/log.h>
 // #include <zephyr/sys/printk.h>
-
 #include "bme688_reg.h"
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/i2c.h>
+
 
 #define I2C_NODE DT_NODELABEL (bme688)
 
+static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
 
 
 void Configi2c(void)
@@ -24,7 +28,7 @@ void Configi2c(void)
 	printk(" Initiating the Plant Monitor (Project-Carl) Using Thingy:53 with board configuration: %s\n", CONFIG_BOARD);
 	// int ret;
 	// Retrive the API-Specific device structure and make sure that the device is ready to use
-	static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
+	// static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
 	if (!device_is_ready(dev_i2c.bus))
 	{
 		printk("I2C bus %s is not ready!\n\r", dev_i2c.bus->name);
@@ -36,6 +40,7 @@ void EnvSensorConfig(void)
 {
    // ******************** /// Forced Mode /// ******************** //
     int ret;
+    //static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
     // set humidity oversampling set osrs_x<2:0>
     char buff1[] = {BME688_CTRL_HUM, BME688_MODE_CTRL_HUM_DEFAULT};
     ret = i2c_write_dt(&dev_i2c, buff1, sizeof(buff1));

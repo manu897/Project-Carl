@@ -52,7 +52,7 @@ dkms.conf
 
 *.swp
 *~
-/build*/
+build*/
 .DS_Store
 .vscode
 *.code-workspace
