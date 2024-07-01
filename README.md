@@ -11,9 +11,11 @@ The system is shown below. TBD - more details
 
 ### Hardware used
 
+- [Segger J-Link EDU Mini](https://www.segger.com/products/debug-probes/j-link/models/j-link-edu-mini/)
 - [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53)
-    - [BME688](https://cdn.shopify.com/s/files/1/0174/1800/files/bst-bme688-ds000.pdf?v=1620834794) | Digital low power gas, pressure, temperature & humidity sensor
+    + [BME688](https://cdn.shopify.com/s/files/1/0174/1800/files/bst-bme688-ds000.pdf?v=1620834794) | Digital low power gas, pressure, temperature & humidity sensor
 - [Grove - Capacitive Moisture Sensor](https://wiki.seeedstudio.com/Grove-Capacitive_Moisture_Sensor-Corrosion-Resistant/)
+
 
 ## Clone the Application
 To clone the application, follow these steps:
@@ -49,6 +51,18 @@ $ thingy53_nrf5340_cpuapp_ns
 5. Open COM port under 115200 baud rate, putty.
 
 ### MacOS Sonoma 14.5 --> Build with West
+
+#### Prerequisites:
+
+Before you can clone and build this application, make sure you have the following prerequisites installed on your system:
+
+- Git: [Download and install Git](https://git-scm.com/downloads)
+- West: [Install West](https://docs.zephyrproject.org/latest/guides/west/install.html)
+- Visual Studio Code: [Download and install Visual Studio Code](https://code.visualstudio.com/download)
+- Nordic nRF Connect VS Code extension: (install from the Extensions tab in VSCode)
+- For West CLI builds, you will need a recent (>3.8) python install, and the following modules:
+	+ elftools
+	+ intelhex
 
 After cloning the application, you need to update it using West. Here's how:
 
@@ -103,8 +117,10 @@ nrfjprog -e
             |__ ble.c
             |__ ble.h
 * CMakeLists.txt
+* Kconfig
 * prj.conf
 * thingy53_nrf5340_cpuapp_ns.overlay
+* west.yml
 ```
 
 # Build & Test Status
@@ -120,6 +136,14 @@ Linux(Ubuntu 22.0.2)
 MacOs Sonoma 14.5 (23F79)
 
 ![Static Badge](https://img.shields.io/badge/build-Pass-green)
+
+TODO
+----
+Things to consider to implement in the source code and related scripts/tools:
+
+* Connect the soil moisture sensor on to the thingy:53 board.
+* Implement auto build and versioning feature into the code.
+* Make it compatible for ROS 1/2 ??
 
 ## Author
 
