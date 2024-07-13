@@ -11,13 +11,13 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/printk.h>
 
-/* including private headers */
+/* including private headers 
 #include "bme688_reg.h"
-#include "bme688_interface.c"
+#include "bme688_interface.c" */
 
 /* The code snippet */
 /* 1000x30 = 30sec */
-//#define SLEEP_TIME_MS	1000*2
+#define SLEEP_TIME_MS	1000*2
 // #define I2C_NODE DT_NODELABEL (bme688)
 
 /*
@@ -31,10 +31,13 @@
 int main(void)
 {
 	// Configure I2C
-	Configi2c();
+	if(false == configi2c())
+	{
+		printk("FAIL to init configure I2C settings\n\r");
+	}
 
 	// Setup the Sensor
-	EnvSensorConfig();
+	//EnvSensorConfig();
 
 	// Read the sensor
 	while (1)

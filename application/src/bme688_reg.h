@@ -5,12 +5,12 @@
  * Description:  header file for bme688_interface
  * Reference for the BME688 sensor manufacturer document https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf
  *******************************************************************/
-// #include <zephyr/kernel.h>
-// #include <zephyr/device.h>
-// #include <zephyr/devicetree.h>
-// #include <zephyr/drivers/i2c.h>
-// #include <zephyr/logging/log.h>
-// #include <zephyr/sys/printk.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/sys/printk.h>
 
 /*******************************************************************
  * defines
@@ -54,6 +54,6 @@
 /*******************************************************************
  * Function Declarations
  *******************************************************************/
-void Configi2c(void);
-void EnvSensorConfig(void);
-void EnvSensorRead(void);
+extern bool configi2c(void);
+extern bool envSensorConfig(void);
+extern bool envSensorRead(void);
