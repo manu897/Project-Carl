@@ -18,7 +18,9 @@
 
 #define I2C_NODE DT_NODELABEL (bme688)
 
+
 static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
+
 
 
 bool configi2c()
@@ -26,7 +28,7 @@ bool configi2c()
     // Code using I2C and registers
     
 	printk(" Initiating the Plant Monitor (Project-Carl) Using Thingy:53 with board configuration: %s\n", CONFIG_BOARD);
-	// int ret;
+	int ret;
 	// Retrive the API-Specific device structure and make sure that the device is ready to use
 	// static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
 	if (!device_is_ready(dev_i2c.bus))
@@ -39,6 +41,7 @@ bool configi2c()
         printk("I2C bus %s is ready\n\r", dev_i2c.bus->name);
         return true;
     }
+
 }
 
 bool envSensorConfig(void)
