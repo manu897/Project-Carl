@@ -12,21 +12,17 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
 
-/* including private headers 
-#include "bme688_reg.h"
-#include "bme688_interface.c" */
+/* including private headers */
+// #include "bme688_reg.h"
+// #include "bme688_interface.c"
+#include "ui.h"
+#include "ui.c"
+
 
 /* The code snippet */
 /* 1000x30 = 30sec */
-#define SLEEP_TIME_MS	1000/8
+#define SLEEP_TIME_MS	1000/6
 // #define I2C_NODE DT_NODELABEL (bme688)
-#define LED0_NODE DT_ALIAS (led0)
-#define LED1_NODE DT_ALIAS (led1)
-#define LED2_NODE DT_ALIAS (led2)
-
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
-static const struct gpio_dt_spec led1 = GPIO_DT_SPEC_GET(LED1_NODE, gpios);
-static const struct gpio_dt_spec led2 = GPIO_DT_SPEC_GET(LED2_NODE, gpios);
 
 /*
  * Copyright (c) 2012-2014 Wind River Systems, Inc.
@@ -46,19 +42,18 @@ int main(void)
 
 	// Setup the Sensor
 	//EnvSensorConfig();
-	gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&led1, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&led2, GPIO_OUTPUT_ACTIVE);
+	ui_init();
+	printk("UI initiated\n\r");
 	// Read the sensor
 	while (1)
 	{
 		printk("Main is running once every 2 sec\n\r");
-		gpio_pin_toggle_dt(&led);
+		ui_toggle_led0();
 		k_msleep(SLEEP_TIME_MS);
-		gpio_pin_toggle_dt(&led1);
+		ui_toggle_led1();
 		k_msleep(SLEEP_TIME_MS);
-		gpio_pin_toggle_dt(&led2);
-		k_msleep(SLEEP_TIME_MS);
+		ui_toggle_led2();
+		k_msleep(SLEEP_TIME_MS*2);
 	}
 
 	/*// Test example (start) //
