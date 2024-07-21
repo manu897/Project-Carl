@@ -34,6 +34,13 @@
 
 int main(void)
 {
+	rgb_led_t rgb_led;
+    rgb_led_config_t rgb_config = 
+	{
+        .red_led = led0,
+        .green_led = led1,
+        .blue_led = led2,
+    };
 	// Configure I2C
 	if(false == configi2c())
 	{
@@ -42,18 +49,23 @@ int main(void)
 
 	// Setup the Sensor
 	//EnvSensorConfig();
-	ui_init();
-	printk("UI initiated\n\r");
+	if (rgb_led_init(&rgb_led, &rgb_config) != 0) 
+	{
+        LOG_ERR("Failed to initialize RGB LED");
+        return false;
+    }
 	// Read the sensor
 	while (1)
 	{
-		printk("Main is running once every 2 sec\n\r");
-		ui_toggle_led0();
-		k_msleep(SLEEP_TIME_MS);
-		ui_toggle_led1();
-		k_msleep(SLEEP_TIME_MS);
-		ui_toggle_led2();
-		k_msleep(SLEEP_TIME_MS*2);
+
+		rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+    	k_msleep(SLEEP_TIME_MS);
+        rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
+        k_msleep(SLEEP_TIME_MS);
+        rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
+        k_msleep(SLEEP_TIME_MS);
+        rgb_led_off(&rgb_led); // Off
+        k_msleep(SLEEP_TIME_MS);
 	}
 
 	/*// Test example (start) //

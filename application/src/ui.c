@@ -1,7 +1,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>
+//#include <zephyr/drivers/gpio.h>
 #include "ui.h"
 
 
@@ -14,62 +14,33 @@ static const struct gpio_dt_spec led1 = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 static const struct gpio_dt_spec led2 = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios);
 
 
-void ui_init( void )
+int rgb_led_init(rgb_led_t *led, const rgb_led_config_t *config) 
 {
-    /* init led0 pin */
-    gpio_pin_configure_dt(&led0, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&led1, GPIO_OUTPUT_ACTIVE);
-	gpio_pin_configure_dt(&led2, GPIO_OUTPUT_ACTIVE);
-    k_msleep(5000);
-    ui_clear_leds();
-}
-
-bool ui_get_led0( void )
-{
-    return (gpio_pin_get_dt(&led0) ? true : false);
-}
-
-void ui_set_led0_brightness( uint8_t brightness )
-{
-    /*LOG_INF("Setting LED to brightness %d", brightness);*/
-    if (brightness > 0) 
-    {
-        ui_set_led0();
+    if (!device_is_ready(config->red_led.port) ||
+        !device_is_ready(config->green_led.port) ||
+        !device_is_ready(config->blue_led.port)) {
+        return -ENODEV;
     }
-    else 
-    {
-        ui_clear_led0();
-    }
+
+    led->config = *config;
+
+    gpio_pin_configure_dt(&led->config.red_led, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&led->config.green_led, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure_dt(&led->config.blue_led, GPIO_OUTPUT_INACTIVE);
+
+    return 0;
 }
 
-void ui_set_led0( void )
+void rgb_led_set_color(rgb_led_t *led, uint8_t red, uint8_t green, uint8_t blue) 
 {
-    /*LOG_INF("LED ON");*/
-    gpio_pin_set_dt(&led0, 1);
+    gpio_pin_set_dt(&led->config.red_led, red);
+    gpio_pin_set_dt(&led->config.green_led, green);
+    gpio_pin_set_dt(&led->config.blue_led, blue);
 }
 
-void ui_clear_leds( void )
+void rgb_led_off(rgb_led_t *led) 
 {
-    /*LOG_INF("LEDS OFF");*/
-    gpio_pin_set_dt(&led0, 0);
-    gpio_pin_set_dt(&led1, 0);
-    gpio_pin_set_dt(&led2, 0);
+    gpio_pin_set_dt(&led->config.red_led, 0);
+    gpio_pin_set_dt(&led->config.green_led, 0);
+    gpio_pin_set_dt(&led->config.blue_led, 0);
 }
-
-void ui_toggle_led0( void )
-{
-    /*LOG_INF("Toggle LED");*/
-    gpio_pin_toggle_dt(&led0); 
-}
-
-void ui_toggle_led1( void )
-{
-    /*LOG_INF("Toggle LED");*/
-    gpio_pin_toggle_dt(&led1); 
-}
-void ui_toggle_led2( void )
-{
-    /*LOG_INF("Toggle LED");*/
-    gpio_pin_toggle_dt(&led2); 
-}
-

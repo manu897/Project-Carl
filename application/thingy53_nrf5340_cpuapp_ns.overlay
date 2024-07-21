@@ -22,3 +22,16 @@
                 reg = <0x76>;
         };
 };
+// rgb_led_pins 
+// {
+//         compatible = "gpio-leds";
+//         led0: red_led {
+//             gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+//         };
+//         led1: green_led {
+//             gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+//         };
+//         led2: blue_led {
+//             gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
+//         };
+// };
