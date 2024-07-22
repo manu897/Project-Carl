@@ -34,13 +34,7 @@
 
 int main(void)
 {
-	rgb_led_t rgb_led;
-    rgb_led_config_t rgb_config = 
-	{
-        .red_led = led0,
-        .green_led = led1,
-        .blue_led = led2,
-    };
+
 	// Configure I2C
 	if(false == configi2c())
 	{
@@ -54,18 +48,20 @@ int main(void)
         LOG_ERR("Failed to initialize RGB LED");
         return false;
     }
+	ui_error();
+	lost_ble();
 	// Read the sensor
 	while (1)
 	{
 
-		rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
-    	k_msleep(SLEEP_TIME_MS);
-        rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
-        k_msleep(SLEEP_TIME_MS);
-        rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
-        k_msleep(SLEEP_TIME_MS);
-        rgb_led_off(&rgb_led); // Off
-        k_msleep(SLEEP_TIME_MS);
+		// rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+    	// k_msleep(SLEEP_TIME_MS);
+        // rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
+        // k_msleep(SLEEP_TIME_MS);
+        // rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
+        // k_msleep(SLEEP_TIME_MS);
+        // rgb_led_off(&rgb_led); // Off
+        // k_msleep(SLEEP_TIME_MS);
 	}
 
 	/*// Test example (start) //
@@ -99,3 +95,4 @@ int main(void)
 	} 
 	// Test example (End) // */
 }
+

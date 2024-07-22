@@ -13,12 +13,20 @@ static const struct gpio_dt_spec led0 = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 static const struct gpio_dt_spec led1 = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 static const struct gpio_dt_spec led2 = GPIO_DT_SPEC_GET(DT_ALIAS(led2), gpios);
 
+rgb_led_t rgb_led;
+rgb_led_config_t rgb_config = 
+{
+    .red_led = led0,
+    .green_led = led1,
+    .blue_led = led2,
+};
 
 int rgb_led_init(rgb_led_t *led, const rgb_led_config_t *config) 
 {
     if (!device_is_ready(config->red_led.port) ||
         !device_is_ready(config->green_led.port) ||
-        !device_is_ready(config->blue_led.port)) {
+        !device_is_ready(config->blue_led.port)) 
+    {
         return -ENODEV;
     }
 
@@ -43,4 +51,30 @@ void rgb_led_off(rgb_led_t *led)
     gpio_pin_set_dt(&led->config.red_led, 0);
     gpio_pin_set_dt(&led->config.green_led, 0);
     gpio_pin_set_dt(&led->config.blue_led, 0);
+}
+
+void ui_error()
+{
+    rgb_led_off(&rgb_led); // clear rgb
+	for(uint8_t i = 0; i<20; i++)
+	{
+		rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+    	k_msleep(300);
+		rgb_led_off(&rgb_led); // Off
+        k_msleep(200);
+	}
+}
+
+void lost_ble()
+{
+    rgb_led_off(&rgb_led); // clear rgb
+	for(uint8_t i = 0; i<20; i++)
+	{
+		rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
+    	k_msleep(200);
+        rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+        k_msleep(200);
+		rgb_led_off(&rgb_led); // Off
+    	k_msleep(200);
+	}
 }
