@@ -3,7 +3,8 @@
  * Author: Manideep Reddy Tamma
  * Date of creation: 2024-04-30
  * Description:  header file for bme688_interface
- * Reference for the BME688 sensor manufacturer document https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf
+ * Reference for the BME688 sensor manufacturer document:
+ * https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf
  *******************************************************************/
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
@@ -13,10 +14,10 @@
 #include <zephyr/sys/printk.h>
 
 /*******************************************************************
- * defines
+ * Defines
  *******************************************************************/
 /* 1000 msec = 1 sec */
-#define SLEEP_TIME_MS   1000*2
+// #define SLEEP_TIME_MS   (1000 * 2)
 
 // Get the I2C Node identifier of the sensor
 // #define I2C_NODE DT_NODELABEL (BME688)
@@ -34,7 +35,7 @@
 #define BME688_CTRL_GAS_1                       0x71
 #define BME688_CTRL_GAS_0                       0x70
 #define BME688_MEAS_STATUS_0                    0x1D
-#define BME688_MODE_CTRL_HUM_DEFAULT            0x1     // 001 oversampling x 1
+#define BME688_MODE_CTRL_HUM_DEFAULT            0x01     // 001 oversampling x 1
 #define BME688_MODE_CTRL_TEMP_PRESS_DEFAULT     0x49    // 0001001001 Forced mode, oversampling x 1 for Temp and Press
 
 // Read
