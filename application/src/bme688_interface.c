@@ -1,27 +1,21 @@
 /*******************************************************************
- * File: main.cpp
+ * File: bme688_interface.c
  * Author: Manideep Reddy Tamma
  * Date of creation: 2024-05-02
- * Description: C file for main.c in Project_Carl
+ * Description: C file for interfacing with BME688 sensor in Project Carl
 *********************************************************************/
-// #include <zephyr/kernel.h>
-// #include <zephyr/device.h>
-// #include <zephyr/devicetree.h>
-// #include <zephyr/drivers/i2c.h>
-// #include <zephyr/logging/log.h>
-// #include <zephyr/sys/printk.h>
+
 #include "bme688_reg.h"
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/sys/printk.h>
 
-
-#define I2C_NODE DT_NODELABEL (bme688)
-
+#define I2C_NODE DT_NODELABEL(bme688)
 
 static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
 
-// Calibration parameters (these should be read from the sensor)
+// Calibration parameters
 uint16_t par_t1, par_t2;
 int8_t par_t3;
 uint16_t par_p1, par_p2;
@@ -34,7 +28,7 @@ int32_t t_fine;
 bool read_calibration_params()
 {
     uint8_t calib_data[41];
-    int ret = i2c_burst_read_dt(&dev_i2c, 0x89, calib_data, sizeof(calib_data));
+    int ret = i2c_burst_read_dt(&dev_i2c, 0xE1, calib_data, sizeof(calib_data));
     if (ret != 0)
     {
         printk("Failed to read calibration data from I2C device address 0x%x\n", dev_i2c.addr);
@@ -64,7 +58,6 @@ bool read_calibration_params()
     par_h6 = (int8_t)calib_data[31];
     par_h7 = (int8_t)calib_data[32];
 
-    // Print calibration parameters for debugging
     printk("Calibration parameters:\n");
     printk("par_t1: %u, par_t2: %u, par_t3: %d\n", par_t1, par_t2, par_t3);
     printk("par_p1: %u, par_p2: %u, par_p3: %d, par_p4: %d, par_p5: %d, par_p6: %d, par_p7: %d, par_p8: %d, par_p9: %d, par_p10: %d\n",
@@ -77,49 +70,35 @@ bool read_calibration_params()
 
 bool configi2c()
 {
-    // Code using I2C and registers
-    
-	printk(" Initiating the Plant Monitor (Project-Carl) Using Thingy:53 with board configuration: %s\n", CONFIG_BOARD);
-	// int ret;
-	// Retrive the API-Specific device structure and make sure that the device is ready to use
-	// static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
-	if (!device_is_ready(dev_i2c.bus))
-	{
-		printk("I2C bus %s is not ready!\n\r", dev_i2c.bus->name);
-		return false;
-	}
-    else
+    printk("Initiating the Plant Monitor (Project-Carl) Using Thingy:53 with board configuration: %s\n", CONFIG_BOARD);
+    if (!device_is_ready(dev_i2c.bus))
     {
-        printk("I2C bus %s is ready\n\r", dev_i2c.bus->name);
-        return true;
+        printk("I2C bus %s is not ready!\n", dev_i2c.bus->name);
+        return false;
     }
+    printk("I2C bus %s is ready\n", dev_i2c.bus->name);
+    return true;
 }
 
 bool envSensorConfig(void)
 {
-   // ******************** /// Forced Mode /// ******************** //
     int ret;
-    //static const struct i2c_dt_spec dev_i2c = I2C_DT_SPEC_GET(I2C_NODE);
-    // set humidity oversampling set osrs_x<2:0>
     char buff1[] = {BME688_CTRL_HUM, BME688_MODE_CTRL_HUM_DEFAULT};
     ret = i2c_write_dt(&dev_i2c, buff1, sizeof(buff1));
-    //LOG_
-
-    if (ret !=0)
+    if (ret != 0)
     {
         printk("Failed to write to I2C device address 0x%x at Reg. 0x%x\n", dev_i2c.addr, BME688_CTRL_HUM);
         return false;
     }
-    // set temperature and pressure oversampling 
+
     char buff2[] = {BME688_CTRL_MEAS, BME688_MODE_CTRL_TEMP_PRESS_DEFAULT};
     ret = i2c_write_dt(&dev_i2c, buff2, sizeof(buff2));
-
-    if (ret !=0)
+    if (ret != 0)
     {
         printk("Failed to write to I2C device address 0x%x at Reg. 0x%x\n", dev_i2c.addr, BME688_CTRL_MEAS);
         return false;
     }
-    // Set sensor mode to forced mode
+
     char buff3[] = {BME688_CTRL_MEAS, 0x01}; // Forced mode
     ret = i2c_write_dt(&dev_i2c, buff3, sizeof(buff3));
     if (ret != 0)
@@ -127,19 +106,7 @@ bool envSensorConfig(void)
         printk("Failed to set sensor to forced mode at I2C device address 0x%x at Reg. 0x%x\n", dev_i2c.addr, BME688_CTRL_MEAS);
         return false;
     }
-    // set heat oversampling
 
-    // select IIR filter for temperature sensor
-
-    // select index of heater step
-
-    // define heater-on time
-
-    // set heater temperature
-
-    // set mode to force mode
-
-    // Read calibration parameters
     if (!read_calibration_params())
     {
         printk("Failed to read calibration parameters\n");
@@ -149,14 +116,11 @@ bool envSensorConfig(void)
     return true;
 }
 
-
 double compensate_temperature(int32_t temp_raw)
 {
     double var1 = (((double)temp_raw / 16384.0) - ((double)par_t1 / 1024.0)) * (double)par_t2;
     double var2 = ((((double)temp_raw / 131072.0) - ((double)par_t1 / 8192.0)) * (((double)temp_raw / 131072.0) - ((double)par_t1 / 8192.0))) * ((double)par_t3 * 16.0);
     t_fine = (int32_t)(var1 + var2);
-    printk("Temperature compensation intermediate values:\n");
-    printk("var1: %f, var2: %f, t_fine: %d\n", var1, var2, t_fine);
     return t_fine / 5120.0;
 }
 
@@ -174,8 +138,6 @@ double compensate_pressure(int32_t press_raw)
     var2 = press_comp * ((double)par_p8 / 32768.0);
     double var3 = (press_comp / 256.0) * (press_comp / 256.0) * (press_comp / 256.0) * (par_p10 / 131072.0);
     press_comp = press_comp + (var1 + var2 + var3 + ((double)par_p7 * 128.0)) / 16.0;
-    printk("Pressure compensation intermediate values:\n");
-    printk("var1: %f, var2: %f, var3: %f, press_comp: %f\n", var1, var2, var3, press_comp);
     return press_comp;
 }
 
@@ -186,19 +148,15 @@ double compensate_humidity(int32_t hum_raw, double temp_comp)
     double var3 = (double)par_h6 / 16384.0;
     double var4 = (double)par_h7 / 2097152.0;
     double hum_comp = var2 + ((var3 + (var4 * temp_comp)) * var2 * var2);
-    printk("Humidity compensation intermediate values:\n");
-    printk("var1: %f, var2: %f, var3: %f, var4: %f, hum_comp: %f\n", var1, var2, var3, var4, hum_comp);
     return hum_comp;
 }
 
 bool envSensorRead(void)
 {
-    // Declare the variables for incoming data
     uint8_t temp_data[3];
     uint8_t press_data[3];
     uint8_t hum_data[2];
 
-    // Perform burst read of temperature
     int ret = i2c_burst_read_dt(&dev_i2c, BME688_TEMP_MSB_0, temp_data, sizeof(temp_data));
     if (ret != 0)
     {
@@ -206,7 +164,6 @@ bool envSensorRead(void)
         return false;
     }
 
-    // Perform burst read of pressure
     ret = i2c_burst_read_dt(&dev_i2c, BME688_PRESS_MSB_0, press_data, sizeof(press_data));
     if (ret != 0)
     {
@@ -214,7 +171,6 @@ bool envSensorRead(void)
         return false;
     }
 
-    // Perform burst read of humidity (8s response time)
     ret = i2c_burst_read_dt(&dev_i2c, BME688_HUM_MSB_0, hum_data, sizeof(hum_data));
     if (ret != 0)
     {
@@ -222,23 +178,14 @@ bool envSensorRead(void)
         return false;
     }
 
-    // Convert raw data to human-readable values
     int32_t temp_raw = (int32_t)((temp_data[0] << 12) | (temp_data[1] << 4) | (temp_data[2] >> 4));
     int32_t press_raw = (int32_t)((press_data[0] << 12) | (press_data[1] << 4) | (press_data[2] >> 4));
     int32_t hum_raw = (int32_t)((hum_data[0] << 8) | hum_data[1]);
 
-    // Print raw data for debugging
-    printk("Raw data:\n");
-    printk("Temperature raw: %d\n", temp_raw);
-    printk("Pressure raw: %d\n", press_raw);
-    printk("Humidity raw: %d\n", hum_raw);
-
-    // Apply compensation formulas
     double temp = compensate_temperature(temp_raw);
     double press = compensate_pressure(press_raw);
     double hum = compensate_humidity(hum_raw, temp);
 
-    // Print the values on the terminal in floating point format
     printk("Temperature: %.2f C\n", temp);
     printk("Pressure: %.2f hPa\n", press);
     printk("Humidity: %.2f %%\n", hum);

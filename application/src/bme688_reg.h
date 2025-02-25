@@ -22,7 +22,6 @@
 // Get the I2C Node identifier of the sensor
 // #define I2C_NODE DT_NODELABEL (BME688)
 
-
 // Sensor registers addresses and settings
 
 // Control
@@ -49,8 +48,6 @@
 #define BME688_PRESS_XLSB_0      0x21   // 20bit
 #define BME688_PRESS_LSB_0       0x20   // 16bit
 #define BME688_PRESS_MSB_0       0x1F   // 8bit
-
-
 
 /*******************************************************************
  * Function Declarations

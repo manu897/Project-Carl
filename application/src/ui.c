@@ -56,25 +56,48 @@ void rgb_led_off(rgb_led_t *led)
 void ui_error()
 {
     rgb_led_off(&rgb_led); // clear rgb
-	for(uint8_t i = 0; i<20; i++)
-	{
-		rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
-    	k_msleep(300);
-		rgb_led_off(&rgb_led); // Off
+    for (uint8_t i = 0; i < 20; i++)
+    {
+        rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+        k_msleep(300);
+        rgb_led_off(&rgb_led); // Off
         k_msleep(200);
-	}
+    }
 }
 
 void lost_ble()
 {
     rgb_led_off(&rgb_led); // clear rgb
-	for(uint8_t i = 0; i<20; i++)
-	{
-		rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
-    	k_msleep(200);
+    for (uint8_t i = 0; i < 20; i++)
+    {
+        rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
+        k_msleep(200);
         rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
         k_msleep(200);
-		rgb_led_off(&rgb_led); // Off
-    	k_msleep(200);
-	}
+        rgb_led_off(&rgb_led); // Off
+        k_msleep(200);
+    }
+}
+
+void led_check()
+{
+    rgb_led_off(&rgb_led); // clear rgb
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        rgb_led_set_color(&rgb_led, 1, 0, 0); // Red
+        k_msleep(200);
+        rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
+        k_msleep(200);
+        rgb_led_set_color(&rgb_led, 0, 0, 1); // Blue
+        k_msleep(200);
+    }
+    rgb_led_off(&rgb_led); // clear rgb
+}
+
+void welcome_light()
+{
+    rgb_led_off(&rgb_led); // clear rgb
+    rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
+    k_msleep(1000);
+    rgb_led_off(&rgb_led); // clear rgb
 }

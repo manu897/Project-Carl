@@ -91,7 +91,7 @@ After cloning the application, you need to update it using West. Here's how:
 	```
 7. Run he following command to build the script:
     ```bash
-	west build ./application -b thingy53_nrf5340_cpuapp_ns
+	west build ./application -b thingy53_nrf5340_cpuapp_ns -p
 	```
 
 ## Flashing
