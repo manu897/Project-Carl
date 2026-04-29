@@ -63,3 +63,4 @@ path/
 application/build*/
 .west
 venv
+.claude

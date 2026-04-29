@@ -1,159 +1,107 @@
 # Project-Carl
 
-## Summary
-**Project Carl** is name after a Swedish biologist and physician *Carl Linnaeus*, also known after ennoblement in 1761 as Carl von Linné man is widely acknowledged as the **“Father of Modern Botany"**
+**Project Carl** is named after the Swedish biologist *Carl Linnaeus* (Carl von Linné), widely acknowledged as the **"Father of Modern Botany."**
 
-This project addresses the Plant health monitoring need using a IOT based product. Scope of this project is limited by the hardware and more focused on to the Firmware of the hardware.
+A home plant-monitoring system that scales from one plant to a houseful. Sensor nodes go in the soil. A hub aggregates them and serves a phone-friendly dashboard on the local network. Home Assistant / HomePod integration is opt-in — the product works standalone.
 
-The system is shown below. TBD - more details
+## Architecture
 
-![Block Diagram](./documents/media/Project_Carl_System_Overview.png "System Overview")
-
-### Hardware used
-
-- [Segger J-Link EDU Mini](https://www.segger.com/products/debug-probes/j-link/models/j-link-edu-mini/)
-- [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53)
-    + [BME688](https://cdn.shopify.com/s/files/1/0174/1800/files/bst-bme688-ds000.pdf?v=1620834794) | Digital low power gas, pressure, temperature & humidity sensor
-- [Grove - Capacitive Moisture Sensor](https://wiki.seeedstudio.com/Grove-Capacitive_Moisture_Sensor-Corrosion-Resistant/)
-
-
-## Clone the Application
-To clone the application, follow these steps:
-
-1. Open a terminal or command prompt.
-2. Navigate to the directory where you want to clone the application.
-3. Run the following command to clone the repository:
-
-    ```bash
-    git clone https://github.com/manu897/Project-Carl.git
-    ```
-
-    or:
-
-    ```bash
-    git clone git@github.com:manu897/Project-Carl.git
-    ```
-
-##  Building & Running
-
-### Windows 11 (Home Edition) --> Build with VSCode
-
-#### Install module
-* [nRF SDK 2.5.99-dev](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/2.5.99-dev1/nrf/installation.html)
-
-1. Open project in VSCode
-2. Select nRF Connect on VSCode
-3. Build the application for board
 ```
-$ thingy53_nrf5340_cpuapp_ns
+[Sensor node × N]              [Camera node × 1]
+ XIAO nRF52840                  XIAO ESP32-S3 Sense (bare)
+ BME280 (T/H/P)                 same sensors as cheap node
+ capacitive soil probe          + OV2640 camera (daily still)
+ VEML7700 lux (optional)        + onboard microSD slot
+ coin cell, deep-sleep          USB powered
+ BLE non-connectable adv.       BLE peripheral (BTHome adv.
+ (BTHome v2, AES-CCM)            + connectable GATT for camera)
+        \                              /
+         \  BLE adv (BTHome)          /  BLE GATT (custom service)
+          \                          /
+           v                        v
+        [Hub × 1 — generic ESP32 dev board]
+          BLE central · decrypts BTHome · per-node history
+          HTTP server (mDNS: carl-hub.local)
+          Optional MQTT bridge to Home Assistant
+          Optional daily HTTPS POST to Project-Norman (cloud / ML)
+                  |                            |
+                  v                            v
+        [Phone / tablet browser]       [Home Assistant → HomePod]
 ```
-4. Flash the build on to the Thingy:53, click [here](https://academy.nordicsemi.com/flash-instructions-for-the-thingy53/) for instructions.
-5. Open COM port under 115200 baud rate, putty.
 
-### MacOS Sonoma 14.5 --> Build with West
+The sensor node has two product profiles built from the same firmware:
 
-#### Prerequisites:
+- **Cheap profile** — bare PCB, broadcast-only, no UI. Low BOM, mass-deployed.
+- **Display profile** — XIAO nRF52840 + XIAO Expansion Board. OLED shows live readings, buzzer alerts on dry soil, button calibrates dry/wet. Standalone-usable when the hub is offline.
 
-Before you can clone and build this application, make sure you have the following prerequisites installed on your system:
+## Repo layout
 
-- Git: [Download and install Git](https://git-scm.com/downloads)
-- West: [Install West](https://docs.zephyrproject.org/latest/guides/west/install.html)
-- Visual Studio Code: [Download and install Visual Studio Code](https://code.visualstudio.com/download)
-- Nordic nRF Connect VS Code extension: (install from the Extensions tab in VSCode)
-- For West CLI builds, you will need a recent (>3.8) python install, and the following modules:
-	+ elftools
-	+ intelhex
+| Path | What lives there |
+|---|---|
+| [firmware/common/](firmware/common/) | BTHome v2 encoder/decoder + AES-CCM + sensor drivers — shared by every node. |
+| [firmware/node-sensor/](firmware/node-sensor/) | XIAO nRF52840 sensor node (`display` and `cheap` PIO envs). |
+| [firmware/node-camera/](firmware/node-camera/) | XIAO ESP32-S3 Sense camera node (bare board, onboard SD). |
+| [firmware/hub/](firmware/hub/) | Generic ESP32 hub firmware: BLE scanner + web dashboard + optional MQTT/cloud bridges. |
+| [application-thingy53/](application-thingy53/) | Original Thingy:53 firmware — archived for reference. |
+| [documents/](documents/) | Block diagrams, datasheets. |
 
-After cloning the application, you need to update it using West. Here's how:
+## Build
 
-1. Open a terminal or command prompt.
-2. Navigate to the cloned repository directory.
-3. Run the following command to set the python env workspace:
-    ```python
-    python3 -m venv path/to/venv
+Each firmware target uses its vendor-native toolchain — see the per-target README for full instructions.
 
-    source path/to/venv/bin/activate
-    ```
-4. Run the following command to set the west env workspace:
-    ```bash
-    west init -l application
-    ```
-5. Run the following command to update the repository:
-
-    ```bash
-    west update
-    ```
-
-    You might be asked to provide credentials for the ASD Lighting repos, as these are private.
-6. Prepare your environment by sourcing the zephyr config:
-	```bash
-	source external/zephyr/zephyr-env.sh
-	```
-7. Run he following command to build the script:
-    ```bash
-	west build ./application -b thingy53_nrf5340_cpuapp_ns -p
-	```
-
-## Flashing
-
-Run the following command to flash the device:
-
+**Sensor node** (Zephyr / nRF Connect SDK + west):
 ```bash
+west build -b xiao_ble firmware/node-sensor -- -DEXTRA_CONF_FILE=prj_display.conf
 west flash
+# Cheap profile:
+west build -b xiao_ble firmware/node-sensor -p -- -DEXTRA_CONF_FILE=prj_cheap.conf
 ```
-NOTE: prior flashing the device, it is suggested to fully erase the device by running the related nrfjprog command:
 
+**Camera node** (ESP-IDF):
 ```bash
-nrfjprog -e
+cd firmware/node-camera
+idf.py set-target esp32s3
+idf.py build flash monitor
 ```
 
-## Code file Structure
-
-```
-* src
-    |__ main.c
-            |__ bme688_interface.c
-            |__ bme688_reg.h
-            |__ ble.c
-            |__ ble.h
-* CMakeLists.txt
-* Kconfig
-* prj.conf
-* thingy53_nrf5340_cpuapp_ns.overlay
-* west.yml
+**Hub** (ESP-IDF):
+```bash
+cd firmware/hub
+idf.py set-target esp32s3
+idf.py build flash monitor
+idf.py littlefs-flash    # web assets in data/
 ```
 
-# Build & Test Status
+## First-boot setup
 
-Windows 11 home edition
+1. Flash one or more sensor nodes. On first boot each node generates a 16-byte AES key, prints it on the OLED (display profile) or surfaces it via a one-minute connectable BLE window (cheap profile).
+2. Flash the hub. Connect a phone to the `Carl-Hub-Setup` access point and pick your home Wi-Fi.
+3. Open `http://carl-hub.local/` and provision each node's key. Plants appear as cards; readings update each broadcast cycle.
+4. (Optional) In the dashboard, configure an MQTT broker to push to Home Assistant, and/or a Norman endpoint URL for daily cloud upload.
 
-![Static Badge](https://img.shields.io/badge/build-failed-red)
+## Hardware
 
-Linux(Ubuntu 22.0.2)
+- **Hub** — any generic ESP32 dev board (ESP32-S3-DevKitC-1 preferred for PSRAM).
+- **Sensor node (display profile)** — [XIAO nRF52840](https://wiki.seeedstudio.com/XIAO_BLE/) + [XIAO Expansion Board](https://wiki.seeedstudio.com/Seeeduino-XIAO-Expansion-Board/) + [BME280](https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/) + [Grove capacitive moisture sensor](https://wiki.seeedstudio.com/Grove-Capacitive_Moisture_Sensor-Corrosion-Resistant/) + (optional) VEML7700.
+- **Camera node** — [XIAO ESP32-S3 Sense](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) + same sensor set.
+- **Reference** — [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53), original platform; see [application-thingy53/](application-thingy53/).
 
-![Static Badge](https://img.shields.io/badge/build-unknown-white)
+## Security
 
-MacOs Sonoma 14.5 (23F79)
+Every BLE advertisement is encrypted with AES-CCM-128 using a per-node key. The hub stores keys in NVS, the BTHome 4-byte counter prevents replay. The hub's web dashboard is LAN-only by default; cloud upload to Project-Norman is opt-in and uses a configured bearer token.
 
-![Static Badge](https://img.shields.io/badge/build-Pass-green)
+## Related projects
 
-TODO
-----
-Things to consider to implement in the source code and related scripts/tools:
-
-* Connect the soil moisture sensor on to the thingy:53 board.
-* Implement auto build and versioning feature into the code.
-* Make it compatible for ROS 1/2 ??
+[Project-Norman](https://github.com/manu897/Project-Norman) — the data side. Owns cloud ingestion, storage, ML for plant-health analysis from camera stills, and long-term dashboards. The Carl ↔ Norman boundary is the daily HTTPS POST from the hub.
 
 ## Author
 
-[Manideep Reddy Tamma](mailto:manideep@bioliberty.co.uk) | [LinkedIn](https://www.linkedin.com/in/manideep-reddy-tamma/)
+[Manideep Reddy Tamma](mailto:manideep@bioliberty.co.uk) · [LinkedIn](https://www.linkedin.com/in/manideep-reddy-tamma/)
 
-## Reference
+## References
 
-* [nRF Connect SDK Fundamentals](https://academy.nordicsemi.com/courses/nrf-connect-sdk-fundamentals/)
-* [Nordic Thingy: 53 Datasheet](https://infocenter.nordicsemi.com/pdf/Thingy53_UG.pdf)
-* [BME688 DataSheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf)
-* [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop)
-* [putty](https://www.putty.org/)
-* [Soil Moisture selection](https://metergroup.com/measurement-insights/soil-moisture-sensors-how-they-work-why-some-are-not-research-grade/)
+- [BTHome v2 format](https://bthome.io/format/)
+- [Home Assistant BTHome integration](https://www.home-assistant.io/integrations/bthome/)
+- [ESPHome Bluetooth Proxy](https://esphome.io/components/bluetooth_proxy.html) — alternative hub stack worth knowing about
+- [BME280 datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf)
+- [BME688 datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme688-ds000.pdf)

@@ -1,0 +1,4 @@
+# ESP-IDF managed components. `idf.py reconfigure` resolves these from the
+# Espressif Component Registry on first build.
+dependencies:
+  espressif/esp32-camera: "^2.0.4"

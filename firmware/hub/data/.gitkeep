@@ -1,0 +1,2 @@
+# Web dashboard assets (index.html, app.js, style.css) land here in Phase 3.
+# Built into the LittleFS partition with `idf.py littlefs-flash`.

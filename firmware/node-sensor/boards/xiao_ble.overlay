@@ -1,0 +1,71 @@
+/* Devicetree overlay for XIAO nRF52840 sensor node.
+ *
+ * Wires the soil-moisture probe, ambient I2C bus (BME280, VEML7700, OLED),
+ * the buzzer, and the user button. Pin assignments match the XIAO Expansion
+ * Board for the display profile; the cheap profile only uses the I2C bus +
+ * the soil ADC.
+ */
+
+/ {
+    aliases {
+        carl-soil-adc   = &adc;
+        carl-buzzer     = &buzzer_pwm;
+        carl-button     = &user_button;
+    };
+
+    pwmleds {
+        compatible = "pwm-leds";
+        buzzer_pwm: buzzer_pwm {
+            pwms = <&pwm0 0 PWM_HZ(2000) PWM_POLARITY_NORMAL>;
+        };
+    };
+
+    buttons {
+        compatible = "gpio-keys";
+        user_button: user_button {
+            gpios = <&gpio0 18 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            label = "User button (D1)";
+        };
+    };
+};
+
+&i2c0 {
+    status = "okay";
+
+    bme280@76 {
+        compatible = "bosch,bme280";
+        reg = <0x76>;
+    };
+
+    veml7700@10 {
+        compatible = "vishay,veml7700";
+        reg = <0x10>;
+    };
+
+    /* SSD1306 OLED on the XIAO Expansion Board (display profile only;
+     * the device tree node stays in place — driver init guarded by
+     * CONFIG_CARL_DISPLAY_PROFILE in C). */
+    ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        width  = <128>;
+        height = <64>;
+        segment-offset = <0>;
+        page-offset    = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <63>;
+        prechargep      = <0x22>;
+        segment-remap;
+        com-invdir;
+    };
+};
+
+&adc {
+    status = "okay";
+    /* Soil moisture probe wired to AIN0 / P0.02 (Grove A0 on the expansion
+     * board). Channel configured at runtime in src/sensors.c. */
+};
+
+&pwm0 {
+    status = "okay";
+};

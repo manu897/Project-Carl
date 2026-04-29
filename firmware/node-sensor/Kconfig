@@ -1,0 +1,32 @@
+source "Kconfig.zephyr"
+
+menu "Project-Carl sensor node"
+
+choice CARL_PROFILE
+    prompt "Sensor node product profile"
+    default CARL_DISPLAY_PROFILE
+
+config CARL_DISPLAY_PROFILE
+    bool "Display profile (XIAO Expansion Board: OLED, button, buzzer)"
+    help
+        Builds the premium variant with local UI. Standalone-usable when no
+        hub is reachable.
+
+config CARL_CHEAP_PROFILE
+    bool "Cheap profile (bare board / future PCB)"
+    help
+        Mass-production target. Drops local UI; calibration via a one-minute
+        connectable BLE window on first boot.
+
+endchoice
+
+config CARL_SAMPLE_INTERVAL_SEC
+    int "Sensor sample / broadcast interval (seconds)"
+    default 300
+    range 30 3600
+    help
+        Wake from deep sleep this often, sample sensors, broadcast a BTHome
+        advertisement, then sleep. Lower values trade battery life for
+        freshness. Default: 5 minutes.
+
+endmenu

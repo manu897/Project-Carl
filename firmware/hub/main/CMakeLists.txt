@@ -1,0 +1,20 @@
+# Sources are added across Phase 3 of the plan.
+idf_component_register(
+    SRCS
+        "main.c"
+    INCLUDE_DIRS
+        "."
+        "../../common"
+    REQUIRES
+        nvs_flash
+        bt
+        esp_wifi
+        esp_http_server
+        esp_https_ota
+        esp-tls
+        mbedtls
+        mqtt
+        json
+        mdns
+        esp_littlefs
+)
