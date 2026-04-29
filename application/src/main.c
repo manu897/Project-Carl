@@ -79,13 +79,13 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/logging/log.h>
 
 void main(void)
 {
-
 	const struct device *bme = DEVICE_DT_GET_ONE(bosch_bme680);
-	// struct sensor_value temp, press, humidity, gas_res;
 	struct sensor_value temp, press, humidity;
+	uint32_t start_time = k_uptime_get_32();
 
 	printk("Initiating Project-Carl, Plant Monitor using Thingy:53 %s\n", CONFIG_BOARD);
 
@@ -95,14 +95,13 @@ void main(void)
 		printk("BME680 sensor: Device is ready.\n");
 	}
 
-
 	// Setup the UI
 	if (rgb_led_init(&rgb_led, &rgb_config) != 0) 
 	{
-        LOG_ERR("Failed to initialize RGB LED");
+		LOG_ERR("Failed to initialize RGB LED");
 		ui_error();
-        return false;
-    }
+		return;
+	}
 
 	led_check();
 	welcome_light();
@@ -113,11 +112,6 @@ void main(void)
 	}
 	printk("Device %p name is %s\n", bme, bme->name);
 
-	// if (!device_is_ready(battery)) {
-	// 	printk("Battery sensor: Device not ready.\n");
-	// 	return;
-	// }
-
 	while (1) {
 		k_sleep(K_MINUTES(0.5));
 
@@ -125,25 +119,26 @@ void main(void)
 		sensor_channel_get(bme, SENSOR_CHAN_AMBIENT_TEMP, &temp);
 		sensor_channel_get(bme, SENSOR_CHAN_PRESS, &press);
 		sensor_channel_get(bme, SENSOR_CHAN_HUMIDITY, &humidity);
-		// sensor_channel_get(bme, SENSOR_CHAN_GAS_RES, &gas_res);
 
 		// Multiply pressure value by 10 to shift the decimal point
 		press.val1 = press.val1 * 10 + press.val2 / 100000;
 		press.val2 = (press.val2 % 100000) * 10;
 
-		/* Commenting out the Gas sensor */
-		// printk("Temp: %d.%06d °C | Atm: %d.%06d hPa | Hum: %d.%06d%% | Gas: %d.%06d Ω\n",
-		// 		temp.val1, temp.val2, press.val1, press.val2,
-		// 		humidity.val1, humidity.val2, gas_res.val1,
-		// 		gas_res.val2);
+		// Get elapsed time since start
+		uint32_t elapsed_time = k_uptime_get_32() - start_time;
+		uint32_t hours = elapsed_time / (60 * 60 * 1000);
+		uint32_t minutes = (elapsed_time / (60 * 1000)) % 60;
+		uint32_t seconds = (elapsed_time / 1000) % 60;
 
-		printk("Temp: %d.%06d °C | Atm: %d.%06d hPa | Hum: %d.%06d%%\n",
+		// Print sensor data with timestamp
+		printk("[%02d:%02d:%02d] Temp: %d.%06d °C | Atm: %d.%06d hPa | Hum: %d.%06d%%\n",
+					hours, minutes, seconds,
 					temp.val1, temp.val2, press.val1, press.val2,
 					humidity.val1, humidity.val2);
+
 		// Flash green light
 		rgb_led_set_color(&rgb_led, 0, 1, 0); // Green
 		k_msleep(500);
 		rgb_led_off(&rgb_led); // Off
-
 	}
 }
