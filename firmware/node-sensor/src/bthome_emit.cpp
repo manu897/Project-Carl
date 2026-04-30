@@ -72,7 +72,14 @@ bool broadcastOnce(const carl::sensors::Sample& s,
         BT_DATA(BT_DATA_SVC_DATA16, svc, svc_len),
     };
 
-    int rc = bt_le_adv_start(BT_LE_ADV_NCONN, ad, ARRAY_SIZE(ad), nullptr, 0);
+    // BT_LE_ADV_NCONN is a C99 compound-literal macro and won't compile in
+    // C++ ("taking address of temporary array"). Build the param explicitly.
+    struct bt_le_adv_param param = BT_LE_ADV_PARAM_INIT(
+        /*options=*/0,
+        BT_GAP_ADV_FAST_INT_MIN_2,
+        BT_GAP_ADV_FAST_INT_MAX_2,
+        /*peer=*/nullptr);
+    int rc = bt_le_adv_start(&param, ad, ARRAY_SIZE(ad), nullptr, 0);
     if (rc != 0) {
         printk("bt_le_adv_start failed: %d\n", rc);
         return false;
