@@ -56,8 +56,8 @@ struct DecodedHeader {
 
 // Decode an encrypted BTHome v2 service-data body.
 //
-//   in / in_len : the service-data bytes after the UUID (i.e. starting with the
-//                 DeviceInfo byte).
+//   in / in_len : the full BTHome v2 service-data value, starting with the
+//                 UUID16 (0xD2 0xFC). This is what the encoder emits.
 //   key16       : the AES key associated with the source MAC.
 //   mac6        : source MAC, little-endian.
 //   visitor     : called once per object on success.

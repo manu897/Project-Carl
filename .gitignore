@@ -64,3 +64,13 @@ application/build*/
 .west
 venv
 .claude
+
+# Host-side test binaries
+firmware/common/test/bthome_test
+
+# ESP-IDF / Zephyr build outputs
+firmware/**/build/
+firmware/**/sdkconfig
+firmware/**/sdkconfig.old
+firmware/**/managed_components/
+firmware/**/dependencies.lock

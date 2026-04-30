@@ -1,8 +1,10 @@
 // BTHome v2 encoder for Project-Carl sensor nodes.
 //
 // Encodes a sequence of sensor measurements into an encrypted BTHome v2
-// advertisement payload (service data, UUID 0xFCD2). Uses AES-CCM-128 with a
-// 16-byte per-device key, 4-byte counter, 4-byte MIC.
+// service-data value: [UUID16 LE][DeviceInfo][ciphertext][counter LE][MIC].
+// Drop the result directly into the AD structure of type 0x16 (Service Data,
+// 16-bit UUID). Uses AES-CCM-128 with a 16-byte per-device key, 4-byte
+// counter, 4-byte MIC.
 //
 // Reference: https://bthome.io/format/
 //
@@ -38,9 +40,20 @@ static constexpr uint16_t kServiceUuid = 0xFCD2;
 //   bits 5..7   : version (010 = v2)
 static constexpr uint8_t kDeviceInfoEncryptedV2 = 0x41;
 
-// Maximum payload we need to assemble. BLE advertisement allows 31 bytes total;
-// minus AD-structure headers we have ~24 bytes of service data. Sized to fit.
-static constexpr size_t kMaxAdPayload = 31;
+// Maximum plaintext (sensor objects, before AES-CCM) that the Builder accepts.
+// 64 bytes leaves headroom for any object combination we might encode.
+//
+// On-air practicality:
+//   * Encrypted output = plaintext + 11 bytes (UUID + DeviceInfo + counter + MIC).
+//   * Legacy BLE non-connectable advertising allows 31 bytes total, of which
+//     ~26 are usable for one Service Data AD struct after Flags AD overhead;
+//     subtracting the 11-byte BTHome overhead leaves ~15 bytes of plaintext.
+//   * Nodes that want more than ~15 bytes of plaintext per cycle should either
+//     use BLE 5 extended advertising or split readings across alternating
+//     advertisements (e.g. T/H/P one cycle, moisture/lux the next).
+//
+// The encoder does not enforce the legacy-BLE limit — callers do.
+static constexpr size_t kMaxPlaintext = 64;
 
 // Standard BTHome object IDs we use.
 //
@@ -80,8 +93,8 @@ public:
     bool addIlluminance(float lux);         // 0 .. ~167772 lux
     bool addMoisture(float percent);        // 0 .. 100 % (soil)
 
-    // Encrypt with AES-CCM-128 and emit the BTHome v2 service-data body
-    // (DeviceInfo byte + ciphertext + 4B counter + 4B MIC).
+    // Encrypt with AES-CCM-128 and emit the full BTHome v2 service-data value:
+    //   [UUID16 LE: 2B] [DeviceInfo: 1B] [ciphertext] [counter LE: 4B] [MIC: 4B]
     //
     //   key16   : 16-byte AES key, persisted on the node
     //   mac6    : node's BLE MAC address, little-endian (6 bytes)
@@ -107,7 +120,7 @@ private:
     bool append(const uint8_t* bytes, size_t n);
 
     // Unencrypted BTHome objects, before AES-CCM. Never larger than the AD payload.
-    uint8_t plaintext_[kMaxAdPayload];
+    uint8_t plaintext_[kMaxPlaintext];
     size_t  plaintext_len_;
     bool    error_;
 };
