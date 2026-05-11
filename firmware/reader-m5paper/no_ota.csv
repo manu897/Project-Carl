@@ -1,0 +1,7 @@
+# Larger app partition by skipping OTA — gives us 6 MB for the binary so
+# M5EPD + NimBLE + Arduino-ESP32 fit without juggling.
+# Name,    Type, SubType, Offset,   Size,   Flags
+nvs,       data, nvs,     0x9000,   0x6000,
+otadata,   data, ota,     0xf000,   0x2000,
+app0,      app,  ota_0,   0x10000,  0x600000,
+spiffs,    data, spiffs,  0x610000, 0x9F0000,

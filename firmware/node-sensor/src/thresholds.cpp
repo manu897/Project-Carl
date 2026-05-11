@@ -10,16 +10,18 @@ namespace {
 
 Config g_cfg = { /*warn_pct=*/30, /*crit_pct=*/15 };
 
-constexpr const char* kPath = "carl/thresh";
+// Own subtree (see keystore.cpp comment) so Zephyr's settings routing
+// doesn't collide with the keystore + cal handlers.
+constexpr const char* kPath = "carl_th/cfg";
 
 int settingsCb(const char* name, size_t len, settings_read_cb read_cb, void* cb_arg) {
-    if (std::strcmp(name, "thresh") == 0 && len == sizeof(g_cfg)) {
+    if (std::strcmp(name, "cfg") == 0 && len == sizeof(g_cfg)) {
         read_cb(cb_arg, &g_cfg, sizeof(g_cfg));
     }
     return 0;
 }
 
-SETTINGS_STATIC_HANDLER_DEFINE(carl_thresholds, "carl",
+SETTINGS_STATIC_HANDLER_DEFINE(carl_thresholds, "carl_th",
                                nullptr, settingsCb, nullptr, nullptr);
 
 }  // namespace

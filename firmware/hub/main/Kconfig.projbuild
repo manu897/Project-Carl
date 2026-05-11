@@ -1,0 +1,52 @@
+menu "Carl Hub configuration"
+
+config CARL_WIFI_SSID
+    string "Home Wi-Fi SSID"
+    default "carl-hub-needs-config"
+    help
+        SSID of the home Wi-Fi network the hub joins. The captive-portal
+        first-boot flow (Phase 3f, queued) will replace this with NVS-stored
+        credentials entered through a phone — for now, set via menuconfig
+        before flashing.
+
+config CARL_WIFI_PASSWORD
+    string "Home Wi-Fi password"
+    default ""
+    help
+        WPA2 password. Leave empty for an open network (not recommended).
+
+config CARL_MDNS_HOSTNAME
+    string "mDNS hostname"
+    default "carl-hub"
+    help
+        Hub answers as <hostname>.local on the LAN. iOS app + M5Paper reader
+        discover via the _carl-hub._tcp service record this hostname owns.
+
+config CARL_HTTP_PORT
+    int "HTTP server port"
+    default 80
+    range 1 65535
+    help
+        Port for the OpenAPI server. Default 80 keeps URLs clean for users
+        opening http://carl-hub.local/ in a browser.
+
+config CARL_TEST_NODE_MAC
+    string "Test sensor-node MAC (AA:BB:CC:DD:EE:FF, uppercase)"
+    default ""
+    help
+        BLE MAC of a sensor node whose advertisements the hub should
+        decrypt. Read from nRF Connect mobile app while scanning, or off
+        the back of the XIAO if the chip is labelled. Phase 3c replaces
+        this with a proper POST /api/keys provisioning endpoint backed by
+        NVS — for now, hardcoded one-node entry.
+
+config CARL_TEST_NODE_KEY
+    string "Test sensor-node AES-CCM key (32-char lowercase hex)"
+    default ""
+    help
+        16-byte AES-CCM key, lowercase hex (e.g. 4b1f9c8a3e2d6f70b15c4d8a9e3f2c10).
+        Read off the sensor's OLED on first boot, or from the QR code.
+        Empty string disables BLE-scan decrypt (hub still serves /api/nodes
+        as []).
+
+endmenu

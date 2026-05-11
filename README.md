@@ -26,7 +26,15 @@ A home plant-monitoring system that scales from one plant to a houseful. Sensor 
           Optional daily HTTPS POST to Project-Norman (cloud / ML)
                   |                            |
                   v                            v
-        [Phone / tablet browser]       [Home Assistant → HomePod]
+   +---------------------------+    [Home Assistant → HomePod]
+   |   Wi-Fi LAN HTTP readers  |
+   +-------+-----------+-------+
+           |           |
+           v           v
+   [phone /     [Project-Carl-IOS app]   [M5Paper reader (premium)]
+    tablet                                always-on e-paper + touch
+    browser]                              dashboard, kitchen-counter
+                                          glanceable
 ```
 
 The sensor node has two product profiles built from the same firmware:
@@ -39,9 +47,10 @@ The sensor node has two product profiles built from the same firmware:
 | Path | What lives there |
 |---|---|
 | [firmware/common/](firmware/common/) | BTHome v2 encoder/decoder + AES-CCM + sensor drivers — shared by every node. |
-| [firmware/node-sensor/](firmware/node-sensor/) | XIAO nRF52840 sensor node (`display` and `cheap` PIO envs). |
-| [firmware/node-camera/](firmware/node-camera/) | XIAO ESP32-S3 Sense camera node (bare board, onboard SD). |
-| [firmware/hub/](firmware/hub/) | Generic ESP32 hub firmware: BLE scanner + web dashboard + optional MQTT/cloud bridges. |
+| [firmware/node-sensor/](firmware/node-sensor/) | XIAO nRF52840 sensor node (display + cheap profiles). Zephyr / nRF Connect SDK. |
+| [firmware/node-camera/](firmware/node-camera/) | XIAO ESP32-S3 Sense camera node (bare board, onboard SD). ESP-IDF. |
+| [firmware/hub/](firmware/hub/) | Generic ESP32 hub firmware: BLE scanner + web dashboard + optional MQTT/cloud bridges. ESP-IDF. |
+| [firmware/reader-m5paper/](firmware/reader-m5paper/) | **M5Stack M5Paper reader node — premium-tier always-on e-paper + touch dashboard.** PlatformIO + Arduino-ESP32. |
 | [application-thingy53/](application-thingy53/) | Original Thingy:53 firmware — archived for reference. |
 | [documents/](documents/) | Block diagrams, datasheets. |
 
@@ -72,6 +81,13 @@ idf.py build flash monitor
 idf.py littlefs-flash    # web assets in data/
 ```
 
+**M5Paper reader** (PlatformIO + Arduino):
+```bash
+cd firmware/reader-m5paper
+pio run -t upload                                   # against the real hub
+pio run -e m5paper -- -DCARL_READER_USE_MOCK -t upload   # mock fixtures, no hub needed
+```
+
 ## First-boot setup
 
 1. Flash one or more sensor nodes. On first boot each node generates a 16-byte AES key, prints it on the OLED (display profile) or surfaces it via a one-minute connectable BLE window (cheap profile).
@@ -84,6 +100,7 @@ idf.py littlefs-flash    # web assets in data/
 - **Hub** — any generic ESP32 dev board (ESP32-S3-DevKitC-1 preferred for PSRAM).
 - **Sensor node (display profile)** — [XIAO nRF52840](https://wiki.seeedstudio.com/XIAO_BLE/) + [XIAO Expansion Board](https://wiki.seeedstudio.com/Seeeduino-XIAO-Expansion-Board/) + [BME280](https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/) + [Grove capacitive moisture sensor](https://wiki.seeedstudio.com/Grove-Capacitive_Moisture_Sensor-Corrosion-Resistant/) + (optional) VEML7700.
 - **Camera node** — [XIAO ESP32-S3 Sense](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/) + same sensor set.
+- **Reader node (premium tier)** — [M5Stack M5Paper](https://docs.m5stack.com/en/core/m5paper) — 4.7" e-paper + touch + 1150 mAh internal LiPo. Optional add-on for always-on glanceable kitchen-counter dashboard.
 - **Reference** — [Nordic Thingy:53](https://www.nordicsemi.com/Products/Development-hardware/Nordic-Thingy-53), original platform; see [application-thingy53/](application-thingy53/).
 
 ## Security

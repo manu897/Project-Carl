@@ -45,11 +45,9 @@ bool broadcastOnce(const carl::sensors::Sample& s,
     b.addBattery(s.battery_pct);
 
     if (cycle == 0) {
-        if (s.bme_ok) {
-            b.addTemperature(s.temperature_c);
-            b.addHumidity(s.humidity_pct);
-            b.addPressure(s.pressure_hpa);
-        }
+        if (s.temp_ok)     b.addTemperature(s.temperature_c);
+        if (s.humidity_ok) b.addHumidity(s.humidity_pct);
+        if (s.pressure_ok) b.addPressure(s.pressure_hpa);
     } else {
         if (s.soil_ok)  b.addMoisture(s.soil_pct);
         if (s.veml_ok)  b.addIlluminance(s.illuminance_lux);
@@ -67,15 +65,27 @@ bool broadcastOnce(const carl::sensors::Sample& s,
         return false;
     }
 
+    // Just the BTHome service-data AD struct. We previously also included a
+    // BT_DATA_FLAGS field, but NCS's legacy-adv path rejected the resulting
+    // pair with -EINVAL — and BTHome scanners (the hub here, plus reference
+    // emitters like esphome / bthome-rs) only key off the service-data UUID
+    // 0xFCD2, so flags are dead weight.
     const struct bt_data ad[] = {
-        BT_DATA_BYTES(BT_DATA_FLAGS, BT_LE_AD_NO_BREDR | BT_LE_AD_GENERAL),
         BT_DATA(BT_DATA_SVC_DATA16, svc, svc_len),
     };
 
-    // BT_LE_ADV_NCONN is a C99 compound-literal macro and won't compile in
-    // C++ ("taking address of temporary array"). Build the param explicitly.
+    // BT_LE_ADV_NCONN is a C99 compound-literal macro that won't compile in
+    // C++ ("taking address of temporary array"), so we build the param
+    // explicitly with BT_LE_ADV_PARAM_INIT.
+    //
+    // BT_LE_ADV_OPT_USE_IDENTITY is required because we don't enable
+    // CONFIG_BT_PRIVACY: without it Zephyr tries to advertise with a
+    // Resolvable Private Address it can't generate and bt_le_adv_start
+    // returns -EINVAL (-22) on every call. Using the device's static
+    // random identity address is also what we want — it stays stable
+    // across reboots so the hub's MAC↔key map keeps working.
     struct bt_le_adv_param param = BT_LE_ADV_PARAM_INIT(
-        /*options=*/0,
+        BT_LE_ADV_OPT_USE_IDENTITY,
         BT_GAP_ADV_FAST_INT_MIN_2,
         BT_GAP_ADV_FAST_INT_MAX_2,
         /*peer=*/nullptr);

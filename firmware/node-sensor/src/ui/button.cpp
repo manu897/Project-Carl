@@ -22,6 +22,12 @@ int64_t g_press_started_ms = 0;
 
 struct gpio_callback g_cb;
 
+// Bumped from the GPIO ISR on every edge. The main loop blocks on this
+// semaphore (with a timeout) instead of plain k_sleep so a press doesn't
+// have to wait for the next scheduled sample (which can be 30 min away
+// in customer mode) before the loop notices.
+K_SEM_DEFINE(g_event_sem, 0, 1);
+
 void edgeCb(const struct device*, struct gpio_callback*, gpio_port_pins_t) {
     const int pressed = gpio_pin_get_dt(&g_btn);
     const int64_t now = k_uptime_get();
@@ -32,6 +38,9 @@ void edgeCb(const struct device*, struct gpio_callback*, gpio_port_pins_t) {
         if (held >= kLongPressMs)        g_long_latched.store(true);
         else if (held >= 30)             g_short_latched.store(true);  // debounce
     }
+    // Wake the main loop regardless of edge type — it'll inspect the
+    // latches and decide what to do.
+    k_sem_give(&g_event_sem);
 }
 
 }  // namespace
@@ -49,6 +58,10 @@ bool consumeShortPress() { return g_short_latched.exchange(false); }
 bool consumeLongPress()  { return g_long_latched.exchange(false); }
 
 bool isHeldNow() { return gpio_pin_get_dt(&g_btn) > 0; }
+
+int waitForAnyEvent(int timeout_ms) {
+    return k_sem_take(&g_event_sem, K_MSEC(timeout_ms));
+}
 
 }  // namespace carl::ui::button
 

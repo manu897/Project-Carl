@@ -20,13 +20,109 @@ config CARL_CHEAP_PROFILE
 
 endchoice
 
-config CARL_SAMPLE_INTERVAL_SEC
-    int "Sensor sample / broadcast interval (seconds)"
-    default 300
-    range 30 3600
+config CARL_SAMPLE_INTERVAL_NORMAL_SEC
+    int "Sample interval — normal (Severity::Ok) conditions (s)"
+    default 1800
+    range 30 7200
     help
-        Wake from deep sleep this often, sample sensors, broadcast a BTHome
-        advertisement, then sleep. Lower values trade battery life for
-        freshness. Default: 5 minutes.
+        How often to sample + broadcast when soil is healthy / no alerts.
+        Default: 30 minutes — favours battery life. Plant data changes on
+        minute-to-hour timescales so this is plenty fresh.
+
+config CARL_SAMPLE_INTERVAL_WARNING_SEC
+    int "Sample interval — warning conditions (s)"
+    default 300
+    range 30 1800
+    help
+        How often to sample when soil is approaching dry (Severity::Warning).
+        Default: 5 minutes — catches the transition to critical sooner so
+        the alert fires promptly.
+
+config CARL_SAMPLE_INTERVAL_CRITICAL_SEC
+    int "Sample interval — critical conditions (s)"
+    default 60
+    range 30 600
+    help
+        How often to sample when soil is critically dry. Default: 1 minute —
+        keeps the dashboard / app responsive while the user reacts. Power
+        cost is small because critical conditions don't last long (user
+        waters the plant and severity drops back to Warning then OK).
+
+config CARL_HAS_GROVE_TEMP
+    bool "Grove Temperature Sensor v1.2 wired to D2 (AIN4)"
+    default n
+    help
+        Enable reading a Grove Temperature Sensor v1.2 (analog NTC
+        thermistor module) on AIN4 (D2 / P0.28), wired with jumper
+        wires to the XIAO header on the expansion board. Off by
+        default — when off, AIN4 is left floating and no fallback
+        temperature reading is taken (so the OLED won't show a
+        garbage temperature when nothing is connected).
+
+config CARL_HAS_QR
+    bool "Render provisioning QR code on OLED (display profile)"
+    default n
+    depends on CARL_DISPLAY_PROFILE
+    help
+        When set, the display-profile node renders the carl://node?mac=&key=…
+        provisioning URL as a QR code on the OLED at first boot, and on
+        long-press during normal ops. Requires Nayuki's qrcodegen-c sources
+        to be vendored at firmware/common/qr/ — see firmware/common/qr/README.md
+        for the one-line curl commands. Off by default so the build doesn't
+        fail when those files aren't present yet.
+
+config CARL_OLED_REFRESH_SEC
+    int "OLED refresh interval while awake (s)"
+    default 5
+    range 1 60
+    depends on CARL_DISPLAY_PROFILE
+    help
+        When the display is awake, how often it redraws. Display is asleep
+        most of the time (see below) so this only matters during boot
+        grace, button-wake, and critical-alert windows.
+
+config CARL_DISPLAY_BOOT_GRACE_SEC
+    int "Display on time after boot (s)"
+    default 120
+    range 0 600
+    depends on CARL_DISPLAY_PROFILE
+    help
+        Display stays awake for this long after boot so the user can read
+        the welcome screen, AES key, and provisioning QR. After the grace
+        period, display sleeps to save battery. Set to 0 to disable
+        (display sleeps immediately after the welcome sequence completes).
+
+config CARL_DISPLAY_WAKE_SEC
+    int "Display on time after button press (s)"
+    default 30
+    range 5 300
+    depends on CARL_DISPLAY_PROFILE
+    help
+        Short-press the user button to wake the display for this many
+        seconds. Useful for spot-checking readings without unplugging or
+        opening the hub dashboard.
+
+config CARL_DEBUG_MODE
+    bool "Debug mode (fast sampling, raw values, display always on)"
+    default n
+    help
+        Build the firmware for development / bench debugging instead of
+        production / customer use. Overrides the adaptive sample cadence
+        with a fixed 1 Hz, keeps the OLED awake permanently, swaps the
+        readings page for a raw-values debug view (ADC counts, dry/wet
+        calibration, severity, sample number), and silences the buzzer
+        so it doesn't beep continuously while you iterate.
+
+        Off (default) for production builds shipping to family/friends —
+        gives the long battery life and quiet behaviour the customer
+        path is designed for. Flip this on (-DCONFIG_CARL_DEBUG_MODE=y)
+        when actively iterating on hardware so you can watch values
+        change in real time.
+
+config CARL_DEBUG_SAMPLE_INTERVAL_SEC
+    int "Sample interval in debug mode (s)"
+    default 1
+    range 1 60
+    depends on CARL_DEBUG_MODE
 
 endmenu

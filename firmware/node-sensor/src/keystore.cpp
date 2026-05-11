@@ -11,8 +11,13 @@ namespace carl::keystore {
 
 namespace {
 
-constexpr const char* kKeyPath     = "carl/key";
-constexpr const char* kCounterPath = "carl/counter";
+// Each major settings handler gets its OWN root subtree so Zephyr's
+// settings_parse_and_lookup() can route entries unambiguously.
+// (When multiple handlers share a root, only the first-linked one gets
+// invoked — every other handler's data silently fails to load. That
+// regenerated the AES key on every reset before the split.)
+constexpr const char* kKeyPath     = "carl_keys/key";
+constexpr const char* kCounterPath = "carl_keys/counter";
 
 // Persist the counter to flash every N broadcasts. Lower wears flash faster;
 // higher means more counters get re-used after an unclean reset (which is
@@ -48,7 +53,7 @@ int settingsLoadCb(const char* name, size_t len, settings_read_cb read_cb,
     return 0;
 }
 
-SETTINGS_STATIC_HANDLER_DEFINE(carl_keystore, "carl",
+SETTINGS_STATIC_HANDLER_DEFINE(carl_keystore, "carl_keys",
                                /*get=*/nullptr,
                                /*set=*/settingsLoadCb,
                                /*commit=*/nullptr,

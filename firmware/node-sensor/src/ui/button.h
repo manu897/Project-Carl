@@ -19,6 +19,13 @@ bool consumeLongPress();
 // Synchronous: is the button currently held? Used for boot-time detection.
 bool isHeldNow();
 
+// Block up to timeout_ms or until any button edge (press or release) wakes
+// us. Used in place of k_sleep() so the main loop becomes responsive to
+// presses even while the next scheduled sample is far in the future
+// (sample interval can be 30 min in customer mode). Returns 0 on event,
+// non-zero on timeout — caller doesn't usually care which.
+int waitForAnyEvent(int timeout_ms);
+
 }  // namespace carl::ui::button
 
 #endif  // CONFIG_CARL_DISPLAY_PROFILE

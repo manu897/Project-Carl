@@ -25,8 +25,16 @@ target_sources_ifdef(CONFIG_CARL_DISPLAY_PROFILE app PRIVATE
     src/ui/button.cpp
 )
 
+# QR rendering on the OLED — relies on Nayuki's qrcodegen-c vendored at
+# firmware/common/qr/. See firmware/common/qr/README.md for the curl
+# commands; build-side this is opt-in via CONFIG_CARL_HAS_QR=y.
+target_sources_ifdef(CONFIG_CARL_HAS_QR app PRIVATE
+    ../common/qr/qrcodegen.c
+)
+
 target_include_directories(app PRIVATE
     src
     ../common
     ../common/bthome
+    ../common/qr
 )

@@ -1,13 +1,13 @@
-# Defaults for the hub. Override interactively with `idf.py menuconfig`.
+# Defaults for the hub running on a classic ESP32 (ESP-WROOM-32 / -32U).
+# No PSRAM on these modules — the rolling history buffer lives in heap.
+# Override interactively with `idf.py menuconfig`.
 
-# --- Target chip (ESP32-S3-DevKitC-1) ---
-CONFIG_IDF_TARGET="esp32s3"
+# --- Target chip ---
+# `idf.py set-target esp32` writes this; harmless to declare here too.
+CONFIG_IDF_TARGET="esp32"
 
-# --- PSRAM helps the rolling per-node history buffer ---
-CONFIG_SPIRAM=y
-CONFIG_SPIRAM_MODE_OCT=y
-
-# --- Bluetooth (NimBLE host, central role for scanning + camera GATT pull) ---
+# --- Bluetooth (NimBLE host, central role for scanning sensor-node ads
+#     + observer for passive scan + per-camera-node connectable GATT pull) ---
 CONFIG_BT_ENABLED=y
 CONFIG_BT_NIMBLE_ENABLED=y
 CONFIG_BT_NIMBLE_ROLE_CENTRAL=y
@@ -16,20 +16,24 @@ CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=n
 CONFIG_BT_NIMBLE_ROLE_BROADCASTER=n
 CONFIG_BT_NIMBLE_EXT_ADV=n
 
-# --- Wi-Fi + provisioning ---
+# --- Wi-Fi (station mode for now; SoftAP added in Phase 3f) ---
 CONFIG_ESP_WIFI_ENABLED=y
 CONFIG_LWIP_DHCP_RESTORE_LAST_IP=y
 CONFIG_MDNS_RESOLVE_TEST_SERVICES=n
 
-# --- HTTP server (web dashboard) ---
+# --- HTTP server (web dashboard + REST API) ---
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=2048
 CONFIG_HTTPD_MAX_URI_LEN=512
 
-# --- LittleFS partition (web assets in firmware/hub/data/) ---
+# --- Flash + partition table ---
+# WROOM-32U has 4 MB flash; default Kconfig assumes 2 MB which would reject
+# our partition layout at build time.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="4MB"
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
 
-# --- Crypto ---
+# --- Crypto: AES-CCM for BTHome decrypt + TLS for Norman cloud upload ---
 CONFIG_MBEDTLS_CCM_C=y
 CONFIG_MBEDTLS_AES_C=y
 CONFIG_MBEDTLS_SSL_CLIENT=y

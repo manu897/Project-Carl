@@ -25,10 +25,14 @@
         carl-oled   = &ssd1306;
     };
 
-    /* Soil moisture probe wired to AIN0 (P0.02 / Grove A0 on the expansion
-     * board). Read via &adc using zephyr,user io-channels. */
+    /* Two analog channels:
+     *   index 0 — soil moisture probe on AIN0 (P0.02 / Grove A0 port)
+     *   index 1 — Grove Temperature Sensor v1.2 thermistor on AIN4 (P0.28 / D2),
+     *             wired with jumpers since the expansion board has only one
+     *             analog Grove port.
+     */
     zephyr,user {
-        io-channels = <&adc 0>;
+        io-channels = <&adc 0>, <&adc 4>;
     };
 
     pwmleds {
@@ -40,8 +44,10 @@
 
     buttons {
         compatible = "gpio-keys";
+        /* User button on the XIAO Expansion Board — wired to D1 (P0.03),
+         * pulled up externally on the board, active-low when pressed. */
         user_button: user_button {
-            gpios = <&gpio0 18 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            gpios = <&gpio0 3 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
             label = "User button (D1)";
         };
     };
@@ -75,6 +81,16 @@
         zephyr,input-positive = <NRF_SAADC_AIN0>;
         zephyr,resolution = <12>;
     };
+
+    /* Grove Temperature Sensor v1.2 thermistor — AIN4 (D2 / P0.28). */
+    channel@4 {
+        reg = <4>;
+        zephyr,gain = "ADC_GAIN_1_6";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)>;
+        zephyr,input-positive = <NRF_SAADC_AIN4>;
+        zephyr,resolution = <12>;
+    };
 };
 
 &i2c1 {
@@ -91,7 +107,9 @@
     };
 
     /* SSD1306 OLED on the XIAO Expansion Board. The driver init is gated
-     * behind CONFIG_CARL_DISPLAY_PROFILE in firmware. */
+     * behind CONFIG_CARL_DISPLAY_PROFILE in firmware. `inversion-on`
+     * flips the panel so background pixels stay unlit (lower current
+     * draw on an OLED — only character pixels light up). */
     ssd1306: ssd1306@3c {
         compatible = "solomon,ssd1306fb";
         reg = <0x3c>;
@@ -104,6 +122,7 @@
         prechargep      = <0x22>;
         segment-remap;
         com-invdir;
+        inversion-on;
     };
 };
 

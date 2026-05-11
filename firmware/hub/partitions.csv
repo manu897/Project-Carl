@@ -1,8 +1,15 @@
-# ESP-IDF partition table for carl-hub (8 MB flash on ESP32-S3-DevKitC-1).
-# `littlefs` partition holds the static web dashboard assets (data/).
-# Name,    Type, SubType,  Offset,   Size,   Flags
+# ESP-IDF partition table for carl-hub on a classic ESP32-WROOM-32 / -32U
+# (4 MB flash). Layout:
+#   nvs       — NVS for Wi-Fi creds + per-node AES keys
+#   phy_init  — RF calibration data
+#   factory   — application binary (~2 MB, generous headroom over the
+#               current ~1 MB build)
+#   littlefs  — web dashboard SPA (Phase 3e), 1.5 MB
+#   nodecfg   — per-node settings + history checkpoint, 64 KB
+#
+# Name,    Type, SubType,  Offset,   Size,       Flags
 nvs,       data, nvs,      0x9000,   0x6000,
 phy_init,  data, phy,      0xf000,   0x1000,
-factory,   app,  factory,  0x10000,  3M,
-littlefs,  data, littlefs, ,         2M,
-nodecfg,   data, nvs,      ,         128K,
+factory,   app,  factory,  0x10000,  0x1F0000,
+littlefs,  data, littlefs, ,         0x180000,
+nodecfg,   data, nvs,      ,         0x10000,

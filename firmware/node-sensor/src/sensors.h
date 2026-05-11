@@ -10,9 +10,14 @@
 namespace carl::sensors {
 
 struct Sample {
-    bool     bme_ok;
+    // Each environmental field has its own _ok flag because different sensor
+    // combinations populate different subsets — e.g. a BME280 fills all three,
+    // a Grove Temperature Sensor v1.2 only fills temperature.
+    bool     temp_ok;
     float    temperature_c;   // °C
+    bool     humidity_ok;
     float    humidity_pct;    // %
+    bool     pressure_ok;
     float    pressure_hpa;    // hPa
 
     bool     veml_ok;
@@ -39,5 +44,9 @@ void setSoilCalibration(uint16_t dry_raw, uint16_t wet_raw);
 
 // Whether calibration has ever been performed.
 bool hasSoilCalibration();
+
+// Raw dry / wet calibration ADC values, for the debug-mode display.
+uint16_t soilDryRaw();
+uint16_t soilWetRaw();
 
 }  // namespace carl::sensors

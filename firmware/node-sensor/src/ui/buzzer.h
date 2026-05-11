@@ -17,6 +17,10 @@ bool init();
 // No-op on Severity::kOk.
 void alert(carl::thresholds::Severity s);
 
+// Play a short three-note ascending chime (~400 ms total) at boot.
+// Blocking. Confirms power, PWM wiring, and that firmware reached main.
+void welcomeChime();
+
 }  // namespace carl::ui::buzzer
 
 #endif  // CONFIG_CARL_DISPLAY_PROFILE
