@@ -49,4 +49,8 @@ bool hasSoilCalibration();
 uint16_t soilDryRaw();
 uint16_t soilWetRaw();
 
+// Last successful battery voltage in millivolts (0 = not yet read /
+// last read failed). Updated each call to `sample()`.
+uint16_t batteryMv();
+
 }  // namespace carl::sensors

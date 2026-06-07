@@ -1,0 +1,19 @@
+/* Devicetree overlay for the Thingy:53 room node.
+ *
+ * The board DTS already defines the RGB LED (pwm0 channels 0-2) and the
+ * buzzer PWM peripheral (pwm1 on P1.15). This overlay just adds the
+ * buzzer-as-pwm-led node so the firmware can grab it via DT_ALIAS.
+ */
+
+/ {
+    aliases {
+        carl-buzzer = &thingy53_buzzer;
+    };
+
+    carl_buzzer: carl_buzzer {
+        compatible = "pwm-leds";
+        thingy53_buzzer: thingy53_buzzer {
+            pwms = <&pwm1 0 PWM_HZ(2000) PWM_POLARITY_NORMAL>;
+        };
+    };
+};

@@ -84,7 +84,24 @@ void carl_key_store_init(void) {
     }
     e->used = true;
     s_count = 1;
-    ESP_LOGI(TAG, "test node %s provisioned with one AES key", mac_str);
+    ESP_LOGI(TAG, "test node %s provisioned", mac_str);
+#endif
+
+#ifdef CONFIG_CARL_TEST_NODE2_MAC
+    const char *mac2_str = CONFIG_CARL_TEST_NODE2_MAC;
+    const char *key2_str = CONFIG_CARL_TEST_NODE2_KEY;
+    if (mac2_str[0] != '\0' && key2_str[0] != '\0') {
+        entry_t *e2 = &s_table[s_count];
+        if (!parse_mac_le(mac2_str, e2->mac)) {
+            ESP_LOGE(TAG, "CARL_TEST_NODE2_MAC '%s' not in AA:BB:CC:DD:EE:FF form", mac2_str);
+        } else if (!parse_key_hex(key2_str, e2->key)) {
+            ESP_LOGE(TAG, "CARL_TEST_NODE2_KEY not 32 hex chars");
+        } else {
+            e2->used = true;
+            s_count++;
+            ESP_LOGI(TAG, "test node 2 %s provisioned", mac2_str);
+        }
+    }
 #endif
 }
 

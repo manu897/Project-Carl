@@ -1,0 +1,15 @@
+source "Kconfig.zephyr"
+
+menu "Project-Carl room node"
+
+config CARL_ROOM_SAMPLE_INTERVAL_SEC
+    int "Sample + broadcast interval (s)"
+    default 30
+    range 10 600
+    help
+        How often the room node samples its sensors and emits a BTHome
+        advertisement. Default 30 s is bring-up-friendly; production rooms
+        with stable conditions can extend this to 5–10 minutes. T/H/P/lux
+        change on minute timescales so faster cadence is wasteful.
+
+endmenu

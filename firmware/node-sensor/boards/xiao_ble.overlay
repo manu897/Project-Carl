@@ -25,14 +25,20 @@
         carl-oled   = &ssd1306;
     };
 
-    /* Two analog channels:
-     *   index 0 — soil moisture probe on AIN0 (P0.02 / Grove A0 port)
-     *   index 1 — Grove Temperature Sensor v1.2 thermistor on AIN4 (P0.28 / D2),
-     *             wired with jumpers since the expansion board has only one
-     *             analog Grove port.
+    /* Three analog channels:
+     *   index 0 — soil moisture probe on AIN0 (P0.02 / Grove A0 port).
+     *   index 1 — Grove Temperature Sensor v1.2 thermistor on AIN4 (P0.28 / D2).
+     *   index 2 — XIAO BLE on-board battery monitor on AIN7 (P0.31). The
+     *             board has a 1 MΩ / 510 kΩ divider from VBAT into AIN7,
+     *             gated by a P-channel FET driven from P0.14 (BAT_READ_EN,
+     *             active-low). Pulling P0.14 LOW enables the divider so
+     *             AIN7 reads VBAT × 0.3377; HIGH disconnects it to save
+     *             ~2 µA continuous leakage. Crucial now that we're running
+     *             on a real LiPo (EEMB LP603759, 1300 mAh).
      */
     zephyr,user {
-        io-channels = <&adc 0>, <&adc 4>;
+        io-channels       = <&adc 0>, <&adc 4>, <&adc 7>;
+        vbat-enable-gpios = <&gpio0 14 GPIO_ACTIVE_LOW>;
     };
 
     pwmleds {
@@ -89,6 +95,19 @@
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)>;
         zephyr,input-positive = <NRF_SAADC_AIN4>;
+        zephyr,resolution = <12>;
+    };
+
+    /* XIAO BLE on-board battery monitor — AIN7 (P0.31). 40 µs acquisition
+     * because the 510 kΩ source impedance from the VBAT divider needs longer
+     * to charge the SAADC sample-and-hold cap; 10 µs is too short for high-Z
+     * sources and produces low-by-a-few-percent readings. */
+    channel@7 {
+        reg = <7>;
+        zephyr,gain = "ADC_GAIN_1_6";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
+        zephyr,input-positive = <NRF_SAADC_AIN7>;
         zephyr,resolution = <12>;
     };
 };

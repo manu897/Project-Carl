@@ -49,4 +49,18 @@ config CARL_TEST_NODE_KEY
         Empty string disables BLE-scan decrypt (hub still serves /api/nodes
         as []).
 
+config CARL_TEST_NODE2_MAC
+    string "Second test node MAC (AA:BB:CC:DD:EE:FF, uppercase)"
+    default ""
+    help
+        BLE MAC of a second sensor node (e.g. a Thingy:53 room node).
+        Leave empty to skip. Phase 3c replaces both test-node entries
+        with a proper POST /api/keys provisioning endpoint.
+
+config CARL_TEST_NODE2_KEY
+    string "Second test node AES-CCM key (32-char lowercase hex)"
+    default ""
+    help
+        AES key for the second test node. Same format as CARL_TEST_NODE_KEY.
+
 endmenu
