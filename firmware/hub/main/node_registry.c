@@ -298,6 +298,27 @@ unsigned carl_node_registry_count(void) {
     return s_count;
 }
 
+void carl_node_registry_foreach(carl_node_visit_fn fn, void *user) {
+    if (s_lock == NULL || fn == NULL) return;
+    xSemaphoreTake(s_lock, portMAX_DELAY);
+    const int64_t now_us = esp_timer_get_time();
+    for (int i = 0; i < MAX_NODES; ++i) {
+        if (!s_table[i].used) continue;
+        const entry_t *e = &s_table[i];
+        char mac_str[18]; mac_to_str(e->mac, mac_str);
+        char id_str[16];  mac_to_node_id(e->mac, id_str);
+        carl_node_snapshot_t snap = {
+            .id     = id_str,
+            .name   = e->meta.name,
+            .mac    = mac_str,
+            .online = node_is_online(e, now_us),
+            .latest = e->latest,
+        };
+        fn(&snap, user);
+    }
+    xSemaphoreGive(s_lock);
+}
+
 static char *empty_array(void) {
     char *empty = (char *)malloc(3);
     if (empty) strcpy(empty, "[]");

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carl · Set up Wi-Fi</title>
+<style>
+  :root { --green:#1f7a3d; --ink:#1c241e; --muted:#6b756d; --line:#dce5de; --bg:#f4f7f4; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display:flex; min-height:100vh; align-items:center; justify-content:center; padding:20px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px;
+    box-shadow:0 4px 20px rgba(20,40,25,.08); width:100%; max-width:380px; padding:26px; }
+  .brand { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .brand .leaf { font-size:26px; } .brand h1 { font-size:20px; margin:0; }
+  p.sub { color:var(--muted); font-size:14px; margin:0 0 20px; }
+  label { display:block; font-size:13px; font-weight:600; color:var(--muted); margin:14px 0 6px; }
+  input { width:100%; padding:11px 12px; font-size:16px; border:1px solid var(--line);
+    border-radius:10px; background:#fbfdfb; }
+  input:focus { outline:none; border-color:var(--green); }
+  button { width:100%; margin-top:22px; padding:13px; font-size:16px; font-weight:650;
+    color:#fff; background:var(--green); border:0; border-radius:10px; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:default; }
+  .msg { margin-top:16px; font-size:14px; text-align:center; min-height:20px; }
+  .msg.ok { color:var(--green); } .msg.err { color:#c0392b; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand"><span class="leaf">🌿</span><h1>Carl Hub</h1></div>
+  <p class="sub">Connect your hub to home Wi-Fi to finish setup.</p>
+  <form id="f" autocomplete="off">
+    <label for="ssid">Network name (SSID)</label>
+    <input id="ssid" name="ssid" required maxlength="32" placeholder="MyHomeWiFi">
+    <label for="psk">Password</label>
+    <input id="psk" name="psk" type="password" maxlength="63" placeholder="(leave blank if open)">
+    <button id="btn" type="submit">Save &amp; connect</button>
+  </form>
+  <div class="msg" id="msg"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const ssid = $("ssid").value.trim();
+  const psk = $("psk").value;
+  const msg = $("msg"), btn = $("btn");
+  if (!ssid) { msg.className = "msg err"; msg.textContent = "Enter a network name."; return; }
+  btn.disabled = true; msg.className = "msg"; msg.textContent = "Saving…";
+  try {
+    const r = await fetch("/api/setup/wifi", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ssid, psk }),
+    });
+    if (r.status === 202) {
+      msg.className = "msg ok";
+      msg.textContent = "Saved! The hub is rebooting to join \"" + ssid + "\". You can close this page.";
+    } else {
+      const j = await r.json().catch(() => ({}));
+      msg.className = "msg err"; msg.textContent = j.message || ("Error " + r.status);
+      btn.disabled = false;
+    }
+  } catch (err) {
+    // Expected: the AP drops as the hub reboots onto your network.
+    msg.className = "msg ok";
+    msg.textContent = "Saved! Reconnect to your home Wi-Fi, then open carl-hub.local.";
+  }
+});
+</script>
+</body>
+</html>

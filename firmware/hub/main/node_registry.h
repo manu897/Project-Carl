@@ -56,6 +56,22 @@ void carl_node_registry_update(const uint8_t mac6_le[6],
 // Number of nodes the hub has heard from (for /api/health node_count).
 unsigned carl_node_registry_count(void);
 
+// Read-only snapshot of one node, handed to a visitor callback. The string
+// pointers are valid only for the duration of the callback.
+typedef struct {
+    const char           *id;     // "node-AABB"
+    const char           *name;
+    const char           *mac;    // "AA:BB:CC:DD:EE:FF"
+    bool                  online;
+    carl_reading_t        latest; // merged latest reading
+} carl_node_snapshot_t;
+
+typedef void (*carl_node_visit_fn)(const carl_node_snapshot_t *snap, void *user);
+
+// Invoke `fn` once per known node (under the registry lock). Used by the MQTT
+// bridge (Home Assistant) and the Norman uplink to publish current readings.
+void carl_node_registry_foreach(carl_node_visit_fn fn, void *user);
+
 // --- JSON renderers (caller frees the returned string) ---
 
 // Full Node[] array. Always returns at least "[]" — never NULL.

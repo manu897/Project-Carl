@@ -63,4 +63,84 @@ config CARL_TEST_NODE2_KEY
     help
         AES key for the second test node. Same format as CARL_TEST_NODE_KEY.
 
+menu "Home Assistant MQTT bridge (optional)"
+
+config CARL_MQTT_HA_ENABLE
+    bool "Publish readings to Home Assistant over MQTT"
+    default n
+    help
+        Bridge node readings to a local MQTT broker using Home Assistant's
+        MQTT Discovery so each plant appears automatically in HA. Opt-in —
+        Carl works standalone without it.
+
+config CARL_MQTT_HA_BROKER_URI
+    string "MQTT broker URI"
+    default "mqtt://homeassistant.local:1883"
+    depends on CARL_MQTT_HA_ENABLE
+    help
+        e.g. mqtt://192.168.1.10:1883 (or mqtts:// for TLS).
+
+config CARL_MQTT_HA_USERNAME
+    string "MQTT username (optional)"
+    default ""
+    depends on CARL_MQTT_HA_ENABLE
+
+config CARL_MQTT_HA_PASSWORD
+    string "MQTT password (optional)"
+    default ""
+    depends on CARL_MQTT_HA_ENABLE
+
+config CARL_MQTT_HA_DISCOVERY_PREFIX
+    string "HA discovery prefix"
+    default "homeassistant"
+    depends on CARL_MQTT_HA_ENABLE
+
+config CARL_MQTT_HA_INTERVAL_SEC
+    int "Publish interval (s)"
+    default 60
+    range 10 3600
+    depends on CARL_MQTT_HA_ENABLE
+
+endmenu
+
+menu "Project-Norman cloud uplink (optional)"
+
+config CARL_NORMAN_ENABLE
+    bool "Stream readings to Project-Norman over MQTT"
+    default n
+    help
+        Continuously publish node readings to Project-Norman's MQTT broker
+        (cloud ingestion / ML). Opt-in. Uses TLS when the URI is mqtts://.
+
+config CARL_NORMAN_BROKER_URI
+    string "Norman MQTT broker URI"
+    default "mqtts://norman.example.com:8883"
+    depends on CARL_NORMAN_ENABLE
+
+config CARL_NORMAN_USERNAME
+    string "Norman MQTT username / device token"
+    default ""
+    depends on CARL_NORMAN_ENABLE
+
+config CARL_NORMAN_PASSWORD
+    string "Norman MQTT password / secret"
+    default ""
+    depends on CARL_NORMAN_ENABLE
+
+config CARL_NORMAN_SITE_ID
+    string "Site / hub identifier (topic namespace)"
+    default "carl-hub"
+    depends on CARL_NORMAN_ENABLE
+    help
+        Readings publish to carl/<site>/<node_id>. Distinguishes multiple
+        hubs uploading to the same Norman account.
+
+config CARL_NORMAN_INTERVAL_SEC
+    int "Publish interval (s)"
+    default 30
+    range 5 3600
+    depends on CARL_NORMAN_ENABLE
+
+endmenu
+
 endmenu

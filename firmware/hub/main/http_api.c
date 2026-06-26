@@ -12,6 +12,8 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "sdkconfig.h"
 
 #include "key_store.h"
@@ -22,6 +24,12 @@
 static const char *TAG = "carl-api";
 
 #define MAX_POST_BODY 512
+
+// Set while the hub is in SoftAP onboarding — the static handler then serves
+// setup.html for every page request so captive-portal probes hit the form.
+static bool s_setup_mode = false;
+
+void carl_http_set_setup_mode(bool on) { s_setup_mode = on; }
 
 // ---------- helpers ----------
 
@@ -394,6 +402,44 @@ static esp_err_t handle_keys_delete(httpd_req_t *req) {
     return ESP_OK;
 }
 
+// ---------- POST /api/setup/wifi (captive portal) ----------
+
+static void reboot_task(void *arg) {
+    (void)arg;
+    vTaskDelay(pdMS_TO_TICKS(1200));  // let the HTTP response flush first
+    ESP_LOGI(TAG, "rebooting to join home Wi-Fi");
+    esp_restart();
+}
+
+static esp_err_t handle_setup_wifi(httpd_req_t *req) {
+    char buf[MAX_POST_BODY];
+    if (read_post_body(req, buf, sizeof(buf)) < 0) return ESP_OK;
+    cJSON *root = cJSON_Parse(buf);
+    if (root == NULL) { send_error(req, "400 Bad Request", "bad_json", "invalid JSON"); return ESP_OK; }
+
+    const cJSON *j_ssid = cJSON_GetObjectItem(root, "ssid");
+    const cJSON *j_psk  = cJSON_GetObjectItem(root, "psk");
+    if (!cJSON_IsString(j_ssid) || j_ssid->valuestring[0] == '\0') {
+        send_error(req, "400 Bad Request", "bad_ssid", "ssid required");
+        cJSON_Delete(root); return ESP_OK;
+    }
+    const char *psk = cJSON_IsString(j_psk) ? j_psk->valuestring : "";
+    if (!carl_wifi_save_creds(j_ssid->valuestring, psk)) {
+        send_error(req, "500 Internal Server Error", "save_failed", "could not persist credentials");
+        cJSON_Delete(root); return ESP_OK;
+    }
+    cJSON_Delete(root);
+
+    httpd_resp_set_status(req, "202 Accepted");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_sendstr(req, "{\"ok\":true,\"message\":\"saved — rebooting to join your network\"}");
+
+    // Reboot shortly so the new credentials take effect via the normal path.
+    xTaskCreate(reboot_task, "carl_reboot", 2048, NULL, 5, NULL);
+    return ESP_OK;
+}
+
 // ---------- static web dashboard (LittleFS) ----------
 
 #define WEB_BASE_PATH "/littlefs"
@@ -450,7 +496,10 @@ static esp_err_t handle_static(httpd_req_t *req) {
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "not found");
         return ESP_OK;
     }
-    if (strcmp(uripath, "/") == 0) strcpy(uripath, "/index.html");
+    // Onboarding: every page request lands on the Wi-Fi setup form so the OS
+    // captive-portal probe (e.g. /hotspot-detect.html, /generate_204) opens it.
+    if (s_setup_mode) strcpy(uripath, "/setup.html");
+    else if (strcmp(uripath, "/") == 0) strcpy(uripath, "/index.html");
 
     char path[300];
     snprintf(path, sizeof(path), WEB_BASE_PATH "%s", uripath);
@@ -529,6 +578,9 @@ void carl_http_api_start(void) {
         { .uri = "/api/keys",    .method = HTTP_OPTIONS, .handler = handle_cors_preflight },
         { .uri = "/api/keys/*",  .method = HTTP_DELETE,  .handler = handle_keys_delete },
         { .uri = "/api/keys/*",  .method = HTTP_OPTIONS, .handler = handle_cors_preflight },
+
+        { .uri = "/api/setup/wifi", .method = HTTP_POST,    .handler = handle_setup_wifi },
+        { .uri = "/api/setup/wifi", .method = HTTP_OPTIONS, .handler = handle_cors_preflight },
     };
     for (size_t i = 0; i < sizeof(routes) / sizeof(routes[0]); ++i) {
         ESP_ERROR_CHECK(httpd_register_uri_handler(server, &routes[i]));

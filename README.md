@@ -132,7 +132,16 @@ pio run -e m5paper -- -DCARL_READER_USE_MOCK -t upload
 | `DELETE` | `/api/nodes/{id}` | Remove node and purge its key |
 | `GET` | `/api/nodes/{id}/history?range=24h\|7d\|30d` | Recent time-series readings |
 
-Hub-internal convenience routes (handy for curl, not part of the client contract): `GET`/`POST` `/api/keys`, `DELETE /api/keys/{mac}`.
+Hub-internal convenience routes (handy for curl, not part of the client contract): `GET`/`POST` `/api/keys`, `DELETE /api/keys/{mac}`. First-boot onboarding uses `POST /api/setup/wifi` from the SoftAP captive portal.
+
+## First-boot Wi-Fi onboarding
+
+With no stored credentials the hub starts a SoftAP **`Carl-Hub-Setup`** and a captive-portal DNS hijack — join it on a phone, the Wi-Fi form pops up (`http://192.168.4.1/`), submit your SSID/password, and the hub saves them to NVS and reboots onto your network. A `CONFIG_CARL_WIFI_SSID` set via `menuconfig` is used as a bench fallback.
+
+## Optional integrations (off by default, set via `menuconfig`)
+
+- **Home Assistant** — `CONFIG_CARL_MQTT_HA_ENABLE`: publishes each plant to a local MQTT broker with HA MQTT Discovery, so nodes appear as sensor entities automatically.
+- **Project-Norman** — `CONFIG_CARL_NORMAN_ENABLE`: continuously streams readings to Norman's MQTT broker (TLS via `mqtts://`) for cloud storage / ML. This is the Carl↔Norman boundary — continuous MQTT, not a daily HTTPS POST.
 
 Timestamps are real ISO-8601 UTC once the hub syncs time via SNTP (a few seconds after Wi-Fi connects). History is held in RAM (~24h at the normal cadence); long-term history is owned by [Project-Norman](https://github.com/manu897/Project-Norman) via the periodic upload.
 
