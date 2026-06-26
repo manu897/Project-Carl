@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f7a3d">
+<title>Carl · Plant Monitor</title>
+<style>
+  :root {
+    --green: #1f7a3d; --green-soft: #e7f3ea;
+    --amber: #c98a00; --red: #c0392b;
+    --ink: #1c241e; --muted: #6b756d;
+    --card: #ffffff; --bg: #f4f7f4; --line: #e2e8e3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--green); color: #fff;
+    padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0));
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.12);
+  }
+  header .leaf { font-size: 22px; }
+  header h1 { font-size: 18px; margin: 0; font-weight: 650; letter-spacing: .2px; }
+  header .status { margin-left: auto; font-size: 12.5px; opacity: .92; text-align: right; line-height: 1.3; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 18px; }
+  .banner {
+    background: #fff3f1; border: 1px solid #f3c9c2; color: var(--red);
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 14px;
+    display: none;
+  }
+  .banner.show { display: block; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; box-shadow: 0 1px 3px rgba(20,40,25,.04);
+  }
+  .card .top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .card .name { font-weight: 650; font-size: 16px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.on { background: #34c759; box-shadow: 0 0 0 3px rgba(52,199,89,.18); }
+  .dot.off { background: #c5ccc7; }
+  .card .seen { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .soil { margin: 14px 0 10px; }
+  .soil .row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+  .soil .val { font-size: 26px; font-weight: 700; }
+  .soil .tag { font-size: 12.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+  .tag.dry { background: #fdecea; color: var(--red); }
+  .tag.warn { background: #fdf3e0; color: var(--amber); }
+  .tag.ok { background: var(--green-soft); color: var(--green); }
+  .bar { height: 8px; background: #eef2ee; border-radius: 999px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; border-radius: 999px; transition: width .4s ease; }
+  .fill.dry { background: var(--red); } .fill.warn { background: var(--amber); } .fill.ok { background: var(--green); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    background: #f6f9f6; border: 1px solid var(--line); border-radius: 9px;
+    padding: 6px 10px; font-size: 13px; color: var(--ink); display: flex; gap: 6px; align-items: center;
+  }
+  .chip .k { color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 60px 20px; }
+  .empty .leaf { font-size: 40px; display: block; margin-bottom: 10px; }
+  .empty code { background: #eef2ee; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px 0 28px; }
+</style>
+</head>
+<body>
+<header>
+  <span class="leaf">🌿</span>
+  <h1>Carl</h1>
+  <div class="status" id="hubStatus">connecting…</div>
+</header>
+
+<div class="wrap">
+  <div class="banner" id="banner"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">
+    <span class="leaf">🪴</span>
+    No plants yet.<br>Provision a node with <code>POST /api/keys</code> or the Carl app.
+  </div>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const POLL_MS = 10000;
+const $ = id => document.getElementById(id);
+
+function fmtSeen(s) {
+  if (!s) return "";
+  // Hub sends ISO-8601 once NTP-synced, else "<n>s-ago" before sync.
+  const m = /^(\d+)s-ago$/.exec(s);
+  let secs;
+  if (m) { secs = +m[1]; }
+  else { const t = Date.parse(s); if (isNaN(t)) return s; secs = Math.max(0, (Date.now() - t) / 1000); }
+  if (secs < 60) return Math.round(secs) + "s ago";
+  if (secs < 3600) return Math.round(secs / 60) + "m ago";
+  if (secs < 86400) return Math.round(secs / 3600) + "h ago";
+  return Math.round(secs / 86400) + "d ago";
+}
+
+function soilStatus(pct, cal) {
+  const dry = (cal && cal.soil_dry_pct != null) ? cal.soil_dry_pct : 25;
+  const wet = (cal && cal.soil_wet_pct != null) ? cal.soil_wet_pct : 65;
+  if (pct < dry) return { cls: "dry", label: "Needs water" };
+  if (pct < (dry + wet) / 2) return { cls: "warn", label: "Getting dry" };
+  return { cls: "ok", label: "Happy" };
+}
+
+function chip(k, v) { return `<span class="chip"><span class="k">${k}</span>${v}</span>`; }
+function num(v, d = 0) { return v == null ? null : (+v).toFixed(d); }
+
+function renderCard(n) {
+  const r = n.latest || {};
+  const online = !!n.online;
+  const soil = r.soil_pct;
+  let soilBlock = "";
+  if (soil != null) {
+    const st = soilStatus(soil, n.calibration);
+    const w = Math.max(0, Math.min(100, soil));
+    soilBlock = `
+      <div class="soil">
+        <div class="row"><span class="val">${Math.round(soil)}%<span style="font-size:13px;color:var(--muted);font-weight:500"> soil</span></span>
+          <span class="tag ${st.cls}">${st.label}</span></div>
+        <div class="bar"><span class="fill ${st.cls}" style="width:${w}%"></span></div>
+      </div>`;
+  }
+  const chips = [];
+  if (r.temperature_c != null)   chips.push(chip("🌡", num(r.temperature_c, 1) + "°C"));
+  if (r.humidity_pct != null)    chips.push(chip("💧", num(r.humidity_pct) + "%"));
+  if (r.illuminance_lux != null) chips.push(chip("☀️", num(r.illuminance_lux) + " lx"));
+  if (r.pressure_hpa != null)    chips.push(chip("🔵", num(r.pressure_hpa) + " hPa"));
+  const bat = n.battery_pct != null ? n.battery_pct : r.battery_pct;
+  if (bat != null)               chips.push(chip("🔋", Math.round(bat) + "%"));
+
+  return `<div class="card">
+    <div class="top">
+      <span class="dot ${online ? "on" : "off"}"></span>
+      <span class="name">${(n.name || n.id || "node")}</span>
+      <span class="seen">${fmtSeen(n.last_seen)}</span>
+    </div>
+    ${soilBlock}
+    <div class="chips">${chips.join("")}</div>
+  </div>`;
+}
+
+async function refresh() {
+  try {
+    const [nodesRes, healthRes] = await Promise.all([
+      fetch("/api/nodes", { cache: "no-store" }),
+      fetch("/api/health", { cache: "no-store" }).catch(() => null),
+    ]);
+    if (!nodesRes.ok) throw new Error("HTTP " + nodesRes.status);
+    const nodes = await nodesRes.json();
+
+    $("banner").classList.remove("show");
+    $("grid").innerHTML = nodes.map(renderCard).join("");
+    $("empty").style.display = nodes.length ? "none" : "block";
+
+    if (healthRes && healthRes.ok) {
+      const h = await healthRes.json();
+      const up = h.uptime_s != null ? Math.floor(h.uptime_s / 3600) + "h" : "";
+      $("hubStatus").innerHTML =
+        `<span class="dot on" style="display:inline-block;vertical-align:middle"></span> ${nodes.length} node${nodes.length === 1 ? "" : "s"}`
+        + (h.version ? `<br>v${h.version} · up ${up}` : "");
+    } else {
+      $("hubStatus").textContent = nodes.length + " nodes";
+    }
+    $("foot").textContent = "Updated " + new Date().toLocaleTimeString();
+  } catch (e) {
+    const b = $("banner");
+    b.textContent = "Can't reach the hub — retrying… (" + e.message + ")";
+    b.classList.add("show");
+    $("hubStatus").textContent = "offline";
+  }
+}
+
+refresh();
+setInterval(refresh, POLL_MS);
+</script>
+</body>
+</html>

@@ -84,3 +84,11 @@ bool carl_wifi_wait_connected(int timeout_ms) {
 unsigned int carl_wifi_local_ip(void) {
     return s_local_ip;
 }
+
+bool carl_wifi_rssi_dbm(int *out_dbm) {
+    if (out_dbm == NULL) return false;
+    wifi_ap_record_t ap;
+    if (esp_wifi_sta_get_ap_info(&ap) != ESP_OK) return false;
+    *out_dbm = ap.rssi;
+    return true;
+}

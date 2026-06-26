@@ -111,6 +111,21 @@ bool init() {
     }
     printk("sensors: soil ADC ready on AIN0\n");
 
+    // Factory calibration: the settings handler has already run (settings_load
+    // in boot() precedes sensors::init()), so a stored user/dev cal would have
+    // set g_calibrated. If nothing was stored, seed the built-in endpoints so
+    // the buttonless cheap/budget node still reports a usable soil %. We do
+    // NOT persist these — a stored cal always loads first and wins.
+#ifdef CONFIG_CARL_SOIL_FACTORY_CAL
+    if (!g_calibrated) {
+        g_dry_raw = CONFIG_CARL_SOIL_FACTORY_DRY_ADC;
+        g_wet_raw = CONFIG_CARL_SOIL_FACTORY_WET_ADC;
+        g_calibrated = (g_dry_raw != g_wet_raw);
+        printk("sensors: applied factory soil cal dry=%u wet=%u\n",
+               g_dry_raw, g_wet_raw);
+    }
+#endif
+
     // Best-effort: the Grove temp thermistor is optional. If channel setup
     // fails, the readGroveTemp() path will simply error out at sample time.
     (void)adc_channel_setup_dt(&g_temp_adc);
@@ -205,6 +220,19 @@ bool readSoilRaw(uint16_t* raw) {
     if (adc_sequence_init_dt(&g_soil_adc, &seq) != 0) return false;
     if (adc_read(g_soil_adc.dev, &seq) != 0) return false;
     *raw = static_cast<uint16_t>(buf < 0 ? 0 : buf);
+    return true;
+}
+
+bool readSoilAveraged(uint16_t* out, int samples) {
+    uint32_t acc = 0;
+    int got = 0;
+    for (int i = 0; i < samples; ++i) {
+        uint16_t r = 0;
+        if (readSoilRaw(&r)) { acc += r; ++got; }
+        k_msleep(20);
+    }
+    if (got == 0) return false;
+    *out = static_cast<uint16_t>(acc / got);
     return true;
 }
 

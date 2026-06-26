@@ -10,6 +10,7 @@
 #include <zephyr/sys/printk.h>
 
 #include "bthome_emit.h"
+#include "dev_cal.h"
 #include "keystore.h"
 #include "sensors.h"
 #include "thresholds.h"
@@ -17,8 +18,13 @@
 #ifdef CONFIG_CARL_DISPLAY_PROFILE
 #include "calibration.h"
 #include "ui/button.h"
-#include "ui/buzzer.h"
 #include "ui/oled.h"
+#endif
+#ifdef CONFIG_CARL_HAS_BUZZER
+#include "ui/buzzer.h"
+#endif
+#ifdef CONFIG_CARL_HAS_RGB
+#include "ui/rgb.h"
 #endif
 
 namespace {
@@ -34,10 +40,53 @@ void boot() {
     if (bt_enable(nullptr) != 0) printk("bt_enable failed\n");
     carl::bthome_emit::init();
 
+    // Surface the provisioning credentials on the serial console as a single
+    // machine-parseable line so tools/provision.py can capture them and print
+    // a stick-on QR label. The budget/cheap node has no screen, so this (or
+    // the printed label) is how its key reaches the hub. On the display
+    // profile we only emit it on first boot (the OLED QR is the primary
+    // path); the cheap profile has no other surface, so emit every boot —
+    // harmless in the field where no serial console is attached.
+    {
+        bt_addr_le_t addr{};
+        size_t addr_count = 1;
+        bt_id_get(&addr, &addr_count);
+#ifdef CONFIG_CARL_DISPLAY_PROFILE
+        const bool emit_prov = carl::keystore::isFreshKey();
+#else
+        const bool emit_prov = true;
+#endif
+        if (addr_count == 1 && emit_prov) {
+            char hex[33];
+            carl::keystore::keyHex(hex);
+            const uint8_t *m = addr.a.val;
+            printk("CARL-PROV mac=%02X:%02X:%02X:%02X:%02X:%02X key=%s\n",
+                   m[5], m[4], m[3], m[2], m[1], m[0], hex);
+        }
+    }
+
+    // Dev-mode serial calibration listener. No-op unless CONFIG_CARL_DEV_CAL —
+    // gives the buttonless node a CAL DRY/WET/SAVE/SHOW path over the console.
+    carl::dev_cal::start();
+
+    // Local feedback (RGB + buzzer) — both profiles. This is the screenless
+    // budget node's only status surface, so it lives outside the display
+    // block. The display profile plays its welcome chime during the splash
+    // sequence below, so we only chime here on the cheap profile.
+#ifdef CONFIG_CARL_HAS_RGB
+    carl::ui::rgb::init();
+    carl::ui::rgb::bootFlash();
+#endif
+#ifdef CONFIG_CARL_HAS_BUZZER
+    carl::ui::buzzer::init();
+#ifndef CONFIG_CARL_DISPLAY_PROFILE
+    carl::ui::buzzer::welcomeChime();
+#endif
+#endif
+
 #ifdef CONFIG_CARL_DISPLAY_PROFILE
     carl::ui::oled::init();
     carl::ui::button::init();
-    carl::ui::buzzer::init();
 
     // Welcome sequence — paced so the user actually has time to see it:
     //   1. Leaf splash with brand text shown immediately.
@@ -47,7 +96,9 @@ void boot() {
     //   4. On first boot only, switch to the key transcription screen
     //      and hold it long enough to read / photograph (5 s).
     carl::ui::oled::showLeafSplash();
+#ifdef CONFIG_CARL_HAS_BUZZER
     carl::ui::buzzer::welcomeChime();
+#endif
     k_sleep(K_MSEC(800));
 
     char hex[33];
@@ -228,14 +279,19 @@ int main(void) {
 #endif
             }
 
-#ifndef CONFIG_CARL_DEBUG_MODE
-            // Buzzer: only on critical samples. Rate-limited naturally by the
-            // 1-minute critical cadence — one beep per minute, not per loop.
-            // Debug mode silences it so we don't beep continuously.
-            if (severity == Sev::kCritical) {
+#endif
+
+            // Local feedback on both profiles: RGB shows severity at a glance,
+            // the buzzer beeps on critical (rate-limited by the 1-min critical
+            // cadence — one beep per minute, not per loop). Debug mode keeps
+            // the buzzer silent so it doesn't beep continuously while iterating.
+#ifdef CONFIG_CARL_HAS_RGB
+            carl::ui::rgb::setSeverity(severity);
+#endif
+#if defined(CONFIG_CARL_HAS_BUZZER) && !defined(CONFIG_CARL_DEBUG_MODE)
+            if (severity == carl::thresholds::Severity::kCritical) {
                 carl::ui::buzzer::alert(severity);
             }
-#endif
 #endif
 
             carl::bthome_emit::broadcastOnce(s, severity);

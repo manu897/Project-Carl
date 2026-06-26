@@ -6,6 +6,7 @@ idf_component_register(
         "http_api.c"
         "key_store.c"
         "node_registry.c"
+        "time_sync.c"
         "ble_scanner.cpp"
         # Shared BTHome library (firmware/common/bthome/) — same code the
         # sensor-node firmware uses on the encode side. C++17.
@@ -28,6 +29,7 @@ idf_component_register(
         mbedtls
         json
         mdns
+        littlefs
 )
 
 # C++17 for the BTHome shared library namespace + the BLE scanner shim.

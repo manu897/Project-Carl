@@ -20,6 +20,26 @@ config CARL_CHEAP_PROFILE
 
 endchoice
 
+config CARL_HAS_BUZZER
+    bool "Piezo buzzer for local alerts (PWM on A3)"
+    default y
+    help
+        Compile the buzzer path. Independent of the display profile so the
+        budget/cheap node (no screen) can still beep on critically dry soil.
+        Drives the carl-buzzer PWM alias (A3 / P0.29 in the board overlay) —
+        the XIAO Expansion Board buzzer, or an external piezo on the bare
+        board. Set n if no buzzer is wired.
+
+config CARL_HAS_RGB
+    bool "RGB status LED (XIAO onboard, GPIO)"
+    default y
+    help
+        Compile the RGB status path. Uses the XIAO nRF52840's onboard RGB LED
+        (led0/led1/led2 = red/green/blue, active-low GPIO). Shows severity at
+        a glance — green OK, amber warning, red critical — so the screenless
+        budget node still gives local feedback. Always present on the bare
+        board, so default y.
+
 config CARL_SAMPLE_INTERVAL_NORMAL_SEC
     int "Sample interval — normal (Severity::Ok) conditions (s)"
     default 1800
@@ -47,6 +67,46 @@ config CARL_SAMPLE_INTERVAL_CRITICAL_SEC
         keeps the dashboard / app responsive while the user reacts. Power
         cost is small because critical conditions don't last long (user
         waters the plant and severity drops back to Warning then OK).
+
+config CARL_SOIL_FACTORY_CAL
+    bool "Apply a built-in factory soil calibration when none is stored"
+    default y
+    help
+        The button-driven dry/wet calibration (display profile) can't run on
+        the buttonless cheap/budget node. With this on, sensors::init() seeds
+        the dry/wet endpoints from CARL_SOIL_FACTORY_DRY_ADC / _WET_ADC when
+        NVS has no stored calibration, so every node reports a usable soil %
+        out of the box and can drive its buzzer / RGB LED. A stored user/dev
+        calibration loads first and always overrides these factory values.
+
+config CARL_SOIL_FACTORY_DRY_ADC
+    int "Factory dry soil ADC count (probe in air)"
+    default 2600
+    range 1 4095
+    depends on CARL_SOIL_FACTORY_CAL
+    help
+        Raw 12-bit ADC count for a dry (in-air) capacitive probe. Placeholder
+        default — bench-measure one probe via the dev-cal CAL SHOW command and
+        set the batch's real value here. Higher count = drier.
+
+config CARL_SOIL_FACTORY_WET_ADC
+    int "Factory wet soil ADC count (probe submerged)"
+    default 1300
+    range 1 4095
+    depends on CARL_SOIL_FACTORY_CAL
+    help
+        Raw 12-bit ADC count for a fully wet (submerged) capacitive probe.
+        Placeholder default — measure and set the real value. Must differ
+        from the dry value.
+
+config CARL_DEV_CAL
+    bool "Dev-mode soil recalibration over the serial console"
+    default n
+    help
+        Starts a console listener that accepts CAL DRY / CAL WET / CAL SAVE /
+        CAL SHOW commands to recalibrate the soil probe without the button or
+        OLED. Intended for bench use and for deriving the factory ADC values
+        above. Requires CONFIG_CONSOLE_GETCHAR=y (added in prj_cheap.conf).
 
 config CARL_HAS_GROVE_TEMP
     bool "Grove Temperature Sensor v1.2 wired to D2 (AIN4)"

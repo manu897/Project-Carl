@@ -9,6 +9,7 @@ target_sources(app PRIVATE
     src/sensors.cpp
     src/thresholds.cpp
     src/calibration.cpp
+    src/dev_cal.cpp
     src/keystore.cpp
     src/bthome_emit.cpp
     # Shared library — compiled into the app build (no separate Zephyr module
@@ -18,11 +19,19 @@ target_sources(app PRIVATE
     ../common/bthome/aes_ccm.cpp
 )
 
-# Display profile pulls in the OLED + buzzer + button code paths.
+# Display profile pulls in the OLED + button code paths.
 target_sources_ifdef(CONFIG_CARL_DISPLAY_PROFILE app PRIVATE
     src/ui/oled.cpp
-    src/ui/buzzer.cpp
     src/ui/button.cpp
+)
+
+# Local feedback — independent of the display so the screenless budget node
+# gets a buzzer + RGB status LED too.
+target_sources_ifdef(CONFIG_CARL_HAS_BUZZER app PRIVATE
+    src/ui/buzzer.cpp
+)
+target_sources_ifdef(CONFIG_CARL_HAS_RGB app PRIVATE
+    src/ui/rgb.cpp
 )
 
 # QR rendering on the OLED — relies on Nayuki's qrcodegen-c vendored at

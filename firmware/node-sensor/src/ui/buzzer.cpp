@@ -1,4 +1,4 @@
-#ifdef CONFIG_CARL_DISPLAY_PROFILE
+#ifdef CONFIG_CARL_HAS_BUZZER
 
 #include "ui/buzzer.h"
 
@@ -63,4 +63,4 @@ void welcomeChime() {
 
 }  // namespace carl::ui::buzzer
 
-#endif  // CONFIG_CARL_DISPLAY_PROFILE
+#endif  // CONFIG_CARL_HAS_BUZZER

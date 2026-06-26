@@ -1,0 +1,280 @@
+openapi: 3.1.0
+info:
+  title: Carl Hub HTTP API
+  version: 0.2.0
+  description: |
+    LAN-only HTTP API exposed by the Carl hub firmware (ESP32) at `http://carl-hub.local/`.
+    The hub advertises `_carl-hub._tcp` via mDNS. No auth in v1 (LAN-only assumption).
+
+    This is the authoritative copy. The iOS app keeps a mirror at
+    `Project-Carl-IOS/api/openapi.yaml`; keep them in sync.
+
+    Implemented as of Phase 3d: /api/health, /api/nodes (GET, POST),
+    /api/nodes/{id} (GET, PATCH, DELETE), /api/nodes/{id}/history.
+    The hub also exposes internal convenience routes (GET/POST /api/keys,
+    DELETE /api/keys/{mac}) for quick provisioning via curl — not part of
+    this client contract. Not yet implemented: /api/setup/wifi (Phase 3f),
+    /api/stream (queued).
+
+servers:
+  - url: http://carl-hub.local
+    description: Default mDNS hostname
+  - url: http://192.168.4.1
+    description: SoftAP setup mode (Carl-Hub-Setup)
+
+paths:
+  /api/health:
+    get:
+      summary: Hub status
+      operationId: getHealth
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /api/nodes:
+    get:
+      summary: List all plants with latest reading
+      operationId: listNodes
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Node"
+    post:
+      summary: Provision a new sensor node
+      operationId: createNode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NodeCreate"
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+        "409":
+          description: node already provisioned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/nodes/{id}:
+    parameters:
+      - $ref: "#/components/parameters/NodeId"
+    get:
+      summary: One plant's latest snapshot
+      operationId: getNode
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+        "404":
+          description: not found
+    patch:
+      summary: Rename or update calibration
+      operationId: updateNode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NodeUpdate"
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+    delete:
+      summary: Remove a node and purge its key
+      operationId: deleteNode
+      responses:
+        "204":
+          description: deleted
+
+  /api/nodes/{id}/history:
+    parameters:
+      - $ref: "#/components/parameters/NodeId"
+      - in: query
+        name: range
+        schema:
+          type: string
+          enum: ["24h", "7d", "30d"]
+          default: "24h"
+    get:
+      summary: Time-series readings
+      operationId: getNodeHistory
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/History"
+
+  /api/setup/wifi:
+    post:
+      summary: SoftAP-only — push home Wi-Fi credentials to the hub
+      operationId: setupWifi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WifiCreds"
+      responses:
+        "202":
+          description: hub will reboot and rejoin the home network
+        "400":
+          description: bad creds
+
+  /api/stream:
+    get:
+      summary: WebSocket — live readings
+      description: |
+        Upgrade to WebSocket. Server pushes `StreamFrame` JSON envelopes. No client→server messages.
+      operationId: liveStream
+      responses:
+        "101":
+          description: switching protocols
+
+components:
+  parameters:
+    NodeId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        description: hex-string node id (lowercase, MAC-derived)
+
+  schemas:
+    Health:
+      type: object
+      required: [hub_id, version, uptime_s, node_count]
+      properties:
+        hub_id: { type: string }
+        version: { type: string }
+        uptime_s: { type: integer, format: int64 }
+        node_count: { type: integer }
+        wifi_rssi_dbm: { type: integer, nullable: true }
+
+    Node:
+      type: object
+      required: [id, mac, name, last_seen, online, latest]
+      properties:
+        id: { type: string }
+        mac: { type: string, example: "AA:BB:CC:DD:EE:FF" }
+        name: { type: string, example: "Bedroom Monstera" }
+        last_seen: { type: string, format: date-time }
+        online: { type: boolean }
+        battery_pct:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+        latest:
+          $ref: "#/components/schemas/Reading"
+        calibration:
+          $ref: "#/components/schemas/Calibration"
+
+    Reading:
+      type: object
+      required: [ts]
+      properties:
+        ts: { type: string, format: date-time }
+        temperature_c: { type: number, nullable: true }
+        humidity_pct: { type: number, nullable: true }
+        pressure_hpa: { type: number, nullable: true }
+        soil_pct: { type: number, nullable: true }
+        illuminance_lux: { type: number, nullable: true }
+        battery_pct: { type: integer, nullable: true }
+
+    Calibration:
+      type: object
+      properties:
+        soil_dry_pct: { type: number, default: 25.0 }
+        soil_wet_pct: { type: number, default: 65.0 }
+        battery_low_pct: { type: integer, default: 15 }
+        offline_after_minutes: { type: integer, default: 30 }
+
+    NodeCreate:
+      type: object
+      required: [mac, key_hex, name]
+      properties:
+        mac:
+          type: string
+          example: "AA:BB:CC:DD:EE:FF"
+        key_hex:
+          type: string
+          minLength: 32
+          maxLength: 32
+          description: 16-byte AES-CCM key, lowercase hex
+        name:
+          type: string
+        calibration:
+          $ref: "#/components/schemas/Calibration"
+
+    NodeUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        calibration:
+          $ref: "#/components/schemas/Calibration"
+
+    History:
+      type: object
+      required: [node_id, range, samples]
+      properties:
+        node_id: { type: string }
+        range:
+          type: string
+          enum: ["24h", "7d", "30d"]
+        samples:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reading"
+
+    WifiCreds:
+      type: object
+      required: [ssid, psk]
+      properties:
+        ssid: { type: string }
+        psk: { type: string }
+
+    StreamFrame:
+      type: object
+      required: [type, node_id]
+      properties:
+        type:
+          type: string
+          enum: [reading, online, offline]
+        node_id: { type: string }
+        payload:
+          oneOf:
+            - $ref: "#/components/schemas/Reading"
+            - type: "null"
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }

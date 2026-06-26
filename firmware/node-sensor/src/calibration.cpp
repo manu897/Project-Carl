@@ -24,19 +24,6 @@ bool waitForPress(int timeout_ms) {
     return false;
 }
 
-bool readSoilAveraged(uint16_t* out, int samples = 16) {
-    uint32_t acc = 0;
-    int got = 0;
-    for (int i = 0; i < samples; ++i) {
-        uint16_t r;
-        if (carl::sensors::readSoilRaw(&r)) { acc += r; ++got; }
-        k_msleep(20);
-    }
-    if (got == 0) return false;
-    *out = static_cast<uint16_t>(acc / got);
-    return true;
-}
-
 }  // namespace
 
 void runDisplayFlow() {
@@ -47,7 +34,7 @@ void runDisplayFlow() {
         return;
     }
     uint16_t dry = 0;
-    if (!readSoilAveraged(&dry)) {
+    if (!carl::sensors::readSoilAveraged(&dry)) {
         carl::ui::oled::showCalibrationStep("Dry FAIL", "ADC error");
         k_msleep(2000);
         return;
@@ -56,7 +43,7 @@ void runDisplayFlow() {
     carl::ui::oled::showCalibrationStep("WET soil", "Place probe, press btn");
     if (!waitForPress(60000)) return;
     uint16_t wet = 0;
-    if (!readSoilAveraged(&wet)) return;
+    if (!carl::sensors::readSoilAveraged(&wet)) return;
 
     if (dry == wet) {
         carl::ui::oled::showCalibrationStep("Cal FAIL", "dry == wet");

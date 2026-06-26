@@ -11,3 +11,9 @@ cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(carl_hub)
+
+# Build the web-dashboard SPA in data/ into a LittleFS image and flash it to
+# the `littlefs` partition alongside the app (FLASH_IN_PROJECT). Provided by
+# the joltwallet/littlefs managed component (see main/idf_component.yml).
+# Re-runs whenever files under data/ change.
+littlefs_create_partition_image(littlefs data FLASH_IN_PROJECT)

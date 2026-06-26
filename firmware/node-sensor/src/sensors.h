@@ -39,6 +39,11 @@ bool sample(Sample* out);
 // Read the soil probe's raw ADC value once. Used by the calibration flow.
 bool readSoilRaw(uint16_t* raw);
 
+// Average `samples` soil reads (~20 ms apart) into *out. Shared by the
+// button (display) and serial (dev) calibration flows. Returns false if no
+// read succeeded.
+bool readSoilAveraged(uint16_t* out, int samples = 16);
+
 // Apply or update the dry/wet calibration. Persists to NVS via settings.
 void setSoilCalibration(uint16_t dry_raw, uint16_t wet_raw);
 

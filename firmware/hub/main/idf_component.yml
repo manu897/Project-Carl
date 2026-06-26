@@ -4,7 +4,10 @@
 # - mdns moved out of core IDF in v5.0 and is now distributed as a managed
 #   component. Required for advertising _carl-hub._tcp on the LAN.
 #
-# joltwallet/littlefs gets added back here in Phase 3e when we wire the
-# web dashboard onto the LittleFS partition.
+# joltwallet/littlefs backs the web-dashboard SPA on the `littlefs` partition
+# (Phase 3e). It provides esp_vfs_littlefs_register() + the
+# littlefs_create_partition_image() CMake helper used in the top-level
+# CMakeLists.txt to build data/ into the image and flash it with the project.
 dependencies:
   espressif/mdns: "^1.4.0"
+  joltwallet/littlefs: "^1.14.0"

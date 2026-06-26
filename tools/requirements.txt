@@ -1,0 +1,4 @@
+# Carl provisioning tool (tools/provision.py)
+qrcode>=7.4      # QR matrix (pure-Python, no native deps)
+Pillow>=9.0      # label canvas / PNG render
+pyserial>=3.5    # only needed for --port (live serial capture) mode

@@ -20,6 +20,7 @@
 #include "key_store.h"
 #include "mdns_service.h"
 #include "node_registry.h"
+#include "time_sync.h"
 #include "wifi_sta.h"
 
 static const char *TAG = "carl-hub";
@@ -44,6 +45,10 @@ void app_main(void) {
                       "Phase 3f. Reconfigure SSID via menuconfig + reflash.");
         return;
     }
+
+    // Start NTP now that Wi-Fi is up so /api/nodes + history emit real
+    // ISO-8601 timestamps (the clock becomes valid a few seconds later).
+    carl_time_sync_start();
 
     carl_mdns_start();
     carl_http_api_start();

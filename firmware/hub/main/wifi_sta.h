@@ -17,3 +17,8 @@ bool carl_wifi_wait_connected(int timeout_ms);
 // Read-only accessor for the bound IPv4 address (for mDNS / logs).
 // Returns 0.0.0.0 if not connected.
 unsigned int carl_wifi_local_ip(void);
+
+// Current RSSI of the associated AP in dBm. Returns true and writes *out_dbm
+// on success; returns false if not connected / AP info unavailable (the
+// /api/health field is then emitted as null).
+bool carl_wifi_rssi_dbm(int *out_dbm);
