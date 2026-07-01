@@ -1,9 +1,19 @@
 /* Devicetree overlay for the Thingy:53 room node.
  *
- * The board DTS already defines the RGB LED (pwm0 channels 0-2) and the
- * buzzer PWM peripheral (pwm1 on P1.15). This overlay just adds the
- * buzzer-as-pwm-led node so the firmware can grab it via DT_ALIAS.
+ * The board DTS already defines the RGB LED (pwm0 channels 0-2), the buzzer
+ * PWM peripheral (pwm1 on P1.15), and a `vbatt` voltage-divider node for the
+ * onboard Li-Po (io-channels = <&adc 2>, 1.5M/180k, power-gpios P0.16). This
+ * overlay adds:
+ *   - the buzzer-as-pwm-led node (grabbed via DT_ALIAS in firmware), and
+ *   - the SAADC channel@2 config the vbatt divider needs (the board declares
+ *     the divider but not the channel). Channel reg 2 → AIN2 (P0.06), matching
+ *     Nordic's `<&adc 2>` reference. The divided Li-Po sits well under the
+ *     gain-1/6 / 0.6V-ref full-scale; the 40us acquisition covers the high
+ *     divider source impedance.
  */
+
+#include <zephyr/dt-bindings/adc/adc.h>
+#include <zephyr/dt-bindings/adc/nrf-adc.h>
 
 / {
     aliases {
@@ -15,5 +25,20 @@
         thingy53_buzzer: thingy53_buzzer {
             pwms = <&pwm1 0 PWM_HZ(2000) PWM_POLARITY_NORMAL>;
         };
+    };
+};
+
+&adc {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    status = "okay";
+
+    channel@2 {
+        reg = <2>;
+        zephyr,gain = "ADC_GAIN_1_6";
+        zephyr,reference = "ADC_REF_INTERNAL";
+        zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
+        zephyr,input-positive = <NRF_SAADC_AIN2>;
+        zephyr,resolution = <12>;
     };
 };

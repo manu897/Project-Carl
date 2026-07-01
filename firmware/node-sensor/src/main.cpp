@@ -281,12 +281,14 @@ int main(void) {
 
 #endif
 
-            // Local feedback on both profiles: RGB shows severity at a glance,
-            // the buzzer beeps on critical (rate-limited by the 1-min critical
-            // cadence — one beep per minute, not per loop). Debug mode keeps
-            // the buzzer silent so it doesn't beep continuously while iterating.
+            // Local feedback on both profiles: a brief RGB blink conveys
+            // severity then the LED goes dark (never solid-on — protects the
+            // battery, same power-aware idea as the OLED). The buzzer beeps on
+            // critical (rate-limited by the 1-min critical cadence — one beep
+            // per minute, not per loop). Debug mode keeps the buzzer silent so
+            // it doesn't beep continuously while iterating.
 #ifdef CONFIG_CARL_HAS_RGB
-            carl::ui::rgb::setSeverity(severity);
+            carl::ui::rgb::blinkSeverity(severity);
 #endif
 #if defined(CONFIG_CARL_HAS_BUZZER) && !defined(CONFIG_CARL_DEBUG_MODE)
             if (severity == carl::thresholds::Severity::kCritical) {

@@ -129,6 +129,16 @@ bool init() {
     // Best-effort: the Grove temp thermistor is optional. If channel setup
     // fails, the readGroveTemp() path will simply error out at sample time.
     (void)adc_channel_setup_dt(&g_temp_adc);
+
+    // Battery channel (AIN7) MUST be configured before any read — without this
+    // adc_read() fails and readBatteryMv() returns 0, pinning battery % to 0.
+    if (device_is_ready(g_vbat_adc.dev)) {
+        if (adc_channel_setup_dt(&g_vbat_adc) != 0) {
+            printk("sensors: VBAT ADC channel setup failed\n");
+        } else {
+            printk("sensors: VBAT ADC ready on AIN7\n");
+        }
+    }
     return true;
 }
 
@@ -161,43 +171,47 @@ uint16_t readBatteryMv() {
     if (!gpio_is_ready_dt(&g_vbat_enable)) return 0;
     if (!device_is_ready(g_vbat_adc.dev))  return 0;
 
-    // GPIO_OUTPUT_ACTIVE drives the pin to its devicetree-defined "active"
-    // level; we configured the GPIO as GPIO_ACTIVE_LOW so ACTIVE = LOW =
-    // divider enabled.
+    // Enable the divider. P0.14 is GPIO_ACTIVE_LOW in the overlay, so
+    // GPIO_OUTPUT_ACTIVE drives it LOW, which connects the 510k leg to ground.
     if (gpio_pin_configure_dt(&g_vbat_enable, GPIO_OUTPUT_ACTIVE) != 0) {
         return 0;
     }
-    // Settle: the divider has ~510 kΩ source impedance and the AIN7 trace
-    // has a small parasitic cap; 2 ms is comfortably more than enough.
     k_msleep(2);
 
     int16_t buf = 0;
     struct adc_sequence seq{};
     seq.buffer      = &buf;
     seq.buffer_size = sizeof(buf);
+    seq.calibrate   = true;
 
-    bool ok = false;
-    if (adc_sequence_init_dt(&g_vbat_adc, &seq) == 0
-        && adc_read(g_vbat_adc.dev, &seq) == 0
-        && buf > 0) {
-        // ADC: gain 1/6, reference 0.6 V internal → full-scale 3.6 V across
-        // 4095 counts. Convert ADC counts → AIN7 mV → VBAT mV (undo divider).
-        //   v_ain7 = buf × 3600 / 4095     (mV at the SAADC input)
-        //   vbat   = v_ain7 / 0.3377       (1M / (1M + 510k) divider ratio)
-        // Combine to one fixed-point step to avoid floats in the sample path:
-        //   vbat_mv = buf × 3600 / 4095 × 1000 / 338
-        //           ≈ buf × 26.0
-        const int32_t v_ain7_mv = (static_cast<int32_t>(buf) * 3600) / 4095;
-        const int32_t vbat_mv   = (v_ain7_mv * 1000) / 338;
-        if (vbat_mv >= 2500 && vbat_mv <= 4500) {
-            g_battery_mv = static_cast<uint16_t>(vbat_mv);
-            ok = true;
+    uint16_t result = 0;
+    if (adc_sequence_init_dt(&g_vbat_adc, &seq) == 0) {
+        // The divider presents a ~337k source impedance; a single SAADC
+        // acquisition undersamples it badly (reads ~half-scale and jitters).
+        // Take a burst of consecutive reads so the sample-and-hold converges,
+        // discard the first 8 (warm-up), then average the settled tail to
+        // smooth ADC jitter.
+        int32_t acc = 0;
+        int n = 0;
+        bool read_ok = true;
+        for (int i = 0; i < 16; ++i) {
+            if (adc_read(g_vbat_adc.dev, &seq) != 0) { read_ok = false; break; }
+            if (i >= 8) { acc += buf; ++n; }
+        }
+        if (read_ok && n > 0) {
+            const int32_t b         = acc / n;
+            const int32_t v_ain7_mv = (b * 3600) / 4095;   // gain 1/6, 0.6V ref → 3.6V FS
+            const int32_t vbat_mv   = (v_ain7_mv * 1000) / 338;  // undo 1M/510k divider
+            if (vbat_mv >= 2500 && vbat_mv <= 4500) {
+                g_battery_mv = static_cast<uint16_t>(vbat_mv);
+                result = g_battery_mv;
+            }
         }
     }
 
-    // Disable the divider regardless of read outcome to spare the leakage.
+    // Disable the divider to spare the leakage current.
     (void)gpio_pin_configure_dt(&g_vbat_enable, GPIO_OUTPUT_INACTIVE);
-    return ok ? g_battery_mv : 0;
+    return result;
 }
 
 // LiPo discharge curve is approximately linear between 3.30 V (empty) and
@@ -306,6 +320,7 @@ bool sample(Sample* out) {
     // a flat battery from an uninitialised radio in the hub log.
     const uint16_t mv = readBatteryMv();
     out->battery_pct = batteryPctFromMv(mv);
+    printk("battery: %u mV -> %u%%\n", mv, out->battery_pct);  // bring-up trace
 
     return any_ok;
 }

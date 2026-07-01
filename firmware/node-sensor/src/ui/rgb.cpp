@@ -47,14 +47,32 @@ bool init() {
 
 void off() { set(false, false, false); }
 
-void setSeverity(carl::thresholds::Severity s) {
+namespace {
+// One on/off pulse of the given colour. Kept short so battery duty stays tiny.
+void pulse(bool r, bool g, bool b, int on_ms, int gap_ms) {
+    set(r, g, b);
+    k_msleep(on_ms);
+    set(false, false, false);
+    k_msleep(gap_ms);
+}
+}  // namespace
+
+void blinkSeverity(carl::thresholds::Severity s) {
+    if (!g_ready) return;
     using S = carl::thresholds::Severity;
     switch (s) {
-        case S::kCritical: set(true,  false, false); break;  // red
-        case S::kWarning:  set(true,  true,  false); break;  // amber (r+g)
+        case S::kCritical:  // three red blinks
+            for (int i = 0; i < 3; ++i) pulse(true, false, false, 120, 120);
+            break;
+        case S::kWarning:   // two amber blinks
+            for (int i = 0; i < 2; ++i) pulse(true, true, false, 120, 120);
+            break;
         case S::kOk:
-        default:           set(false, true,  false); break;  // green
+        default:            // one short green "alive + healthy" blink
+            pulse(false, true, false, 80, 0);
+            break;
     }
+    off();  // never leave the LED lit between samples
 }
 
 void bootFlash() {
@@ -74,7 +92,7 @@ void bootFlash() {
 namespace carl::ui::rgb {
 bool init() { return false; }
 void off() {}
-void setSeverity(carl::thresholds::Severity) {}
+void blinkSeverity(carl::thresholds::Severity) {}
 void bootFlash() {}
 }  // namespace carl::ui::rgb
 
