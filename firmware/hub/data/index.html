@@ -56,6 +56,11 @@
   .bar { height: 8px; background: #eef2ee; border-radius: 999px; overflow: hidden; }
   .bar > span { display: block; height: 100%; border-radius: 999px; transition: width .4s ease; }
   .fill.dry { background: var(--red); } .fill.warn { background: var(--amber); } .fill.ok { background: var(--green); }
+  .badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    background: var(--green-soft); color: var(--green); padding: 2px 7px; border-radius: 999px; }
+  .roomrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px;
+    padding-top: 10px; border-top: 1px dashed var(--line); }
+  .roomlbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   .chip {
     background: #f6f9f6; border: 1px solid var(--line); border-radius: 9px;
@@ -136,14 +141,26 @@ function renderCard(n) {
   const bat = n.battery_pct != null ? n.battery_pct : r.battery_pct;
   if (bat != null)               chips.push(chip("🔋", Math.round(bat) + "%"));
 
+  // Room environment grafted onto a plant by the hub (node sharing its room_id).
+  let roomBlock = "";
+  if (n.room) {
+    const rc = [];
+    if (n.room.temperature_c != null)   rc.push(chip("🌡", num(n.room.temperature_c, 1) + "°C"));
+    if (n.room.humidity_pct != null)    rc.push(chip("💧", num(n.room.humidity_pct) + "%"));
+    if (n.room.illuminance_lux != null) rc.push(chip("☀️", num(n.room.illuminance_lux) + " lx"));
+    if (rc.length) roomBlock = `<div class="roomrow"><span class="roomlbl">room · ${n.room_id || ""}</span>${rc.join("")}</div>`;
+  }
+  const badge = n.node_type === "room" ? `<span class="badge">room</span>` : "";
+
   return `<div class="card">
     <div class="top">
       <span class="dot ${online ? "on" : "off"}"></span>
-      <span class="name">${(n.name || n.id || "node")}</span>
+      <span class="name">${(n.name || n.id || "node")}</span>${badge}
       <span class="seen">${fmtSeen(n.last_seen)}</span>
     </div>
     ${soilBlock}
     <div class="chips">${chips.join("")}</div>
+    ${roomBlock}
   </div>`;
 }
 

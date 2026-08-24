@@ -122,15 +122,28 @@ void handleAdvertisement(const struct ble_gap_disc_desc *d) {
     // d->addr.val is little-endian, NimBLE convention. Look up key.
     const uint8_t *key = carl_key_store_lookup(d->addr.val);
     if (key == nullptr) {
-        // Unknown source. Bumped to INFO during 3b bring-up so we can see
-        // whether BTHome ads are actually arriving when nothing decodes.
-        // Once decryption works for a known sensor, drop this back to LOGV
-        // so neighbour BTHome devices (Shelly, Xiaomi, ESPHome, etc.)
-        // don't spam the log.
-        ESP_LOGI(TAG, "BTHome ad from %02X:%02X:%02X:%02X:%02X:%02X (no key, sd_len=%u)",
-                 d->addr.val[5], d->addr.val[4], d->addr.val[3],
-                 d->addr.val[2], d->addr.val[1], d->addr.val[0],
-                 (unsigned)sd.len);
+        // Unknown source (no provisioned key). Log each MAC exactly ONCE at
+        // INFO — enough to discover a freshly-flashed node you want to
+        // provision, without spamming the log for every neighbour BTHome
+        // device (Shelly, Xiaomi, ESPHome, …) on every ad. Repeats are
+        // silent (LOGD).
+        static uint8_t seen[8][6];
+        static uint8_t seen_count = 0;
+        bool known_unknown = false;
+        for (uint8_t i = 0; i < seen_count; ++i) {
+            if (memcmp(seen[i], d->addr.val, 6) == 0) { known_unknown = true; break; }
+        }
+        if (!known_unknown) {
+            if (seen_count < 8) memcpy(seen[seen_count++], d->addr.val, 6);
+            ESP_LOGI(TAG, "BTHome ad from %02X:%02X:%02X:%02X:%02X:%02X (no key) — provision it to decode",
+                     d->addr.val[5], d->addr.val[4], d->addr.val[3],
+                     d->addr.val[2], d->addr.val[1], d->addr.val[0]);
+        } else {
+            ESP_LOGD(TAG, "BTHome ad from %02X:%02X:%02X:%02X:%02X:%02X (no key, sd_len=%u)",
+                     d->addr.val[5], d->addr.val[4], d->addr.val[3],
+                     d->addr.val[2], d->addr.val[1], d->addr.val[0],
+                     (unsigned)sd.len);
+        }
         return;
     }
 

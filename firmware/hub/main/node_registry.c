@@ -46,6 +46,8 @@ typedef struct {
 typedef struct {
     char               name[32];
     carl_calibration_t cal;
+    char               node_type[8];  // "plant" (default) | "room"
+    char               room_id[24];   // e.g. "living-room"; empty = unassigned
 } node_meta_t;
 
 typedef struct {
@@ -154,6 +156,8 @@ static entry_t *find_or_alloc(const uint8_t mac6_le[6]) {
         if (!meta_load_nvs(mac6_le, &first_free->meta)) {
             first_free->meta.cal = default_cal();
             mac_to_node_id(mac6_le, first_free->meta.name);  // name defaults to id
+            strcpy(first_free->meta.node_type, "plant");     // room nodes set via PATCH
+            first_free->meta.room_id[0] = '\0';
         }
     }
     return first_free;
@@ -220,6 +224,24 @@ static cJSON *reading_to_json(const carl_reading_t *r, const char *ts) {
     return reading;
 }
 
+// Node type, treating an empty/legacy value as "plant".
+static const char *node_type_of(const entry_t *e) {
+    return e->meta.node_type[0] ? e->meta.node_type : "plant";
+}
+
+// Find the room node (node_type=="room") assigned to a given room_id.
+static const entry_t *find_room_entry(const char *room_id) {
+    if (room_id == NULL || room_id[0] == '\0') return NULL;
+    for (int i = 0; i < MAX_NODES; ++i) {
+        if (!s_table[i].used) continue;
+        if (strcmp(node_type_of(&s_table[i]), "room") == 0
+            && strcmp(s_table[i].meta.room_id, room_id) == 0) {
+            return &s_table[i];
+        }
+    }
+    return NULL;
+}
+
 static cJSON *node_to_json(const entry_t *e, int64_t now_us) {
     char mac_str[18];   mac_to_str(e->mac, mac_str);
     char id_str[16];    mac_to_node_id(e->mac, id_str);
@@ -229,6 +251,8 @@ static cJSON *node_to_json(const entry_t *e, int64_t now_us) {
     cJSON_AddStringToObject(node, "id",   id_str);
     cJSON_AddStringToObject(node, "mac",  mac_str);
     cJSON_AddStringToObject(node, "name", e->meta.name);
+    cJSON_AddStringToObject(node, "node_type", node_type_of(e));
+    cJSON_AddStringToObject(node, "room_id", e->meta.room_id);
     cJSON_AddStringToObject(node, "last_seen", ts_buf);
     cJSON_AddBoolToObject  (node, "online", node_is_online(e, now_us));
     if (e->latest.battery_ok)
@@ -244,6 +268,25 @@ static cJSON *node_to_json(const entry_t *e, int64_t now_us) {
     cJSON_AddNumberToObject(cal, "battery_low_pct",       e->meta.cal.battery_low_pct);
     cJSON_AddNumberToObject(cal, "offline_after_minutes", e->meta.cal.offline_after_min);
     cJSON_AddItemToObject(node, "calibration", cal);
+
+    // For a plant node, graft on its room's environment (from the room node
+    // sharing its room_id) so a client sees per-plant ambient T/H/P/lux
+    // without querying the room node separately. Room nodes get no nested room.
+    if (strcmp(node_type_of(e), "room") != 0 && e->meta.room_id[0] != '\0') {
+        const entry_t *room = find_room_entry(e->meta.room_id);
+        if (room != NULL && room != e) {
+            char rts[32]; carl_time_format_event(room->last_seen_us, rts, sizeof(rts));
+            char rid[16]; mac_to_node_id(room->mac, rid);
+            cJSON *ro = cJSON_CreateObject();
+            cJSON_AddStringToObject(ro, "source", rid);
+            cJSON_AddStringToObject(ro, "ts", rts);
+            add_num_or_null(ro, "temperature_c",   room->latest.temp_ok,     room->latest.temp_c);
+            add_num_or_null(ro, "humidity_pct",    room->latest.humidity_ok, room->latest.humidity_pct);
+            add_num_or_null(ro, "pressure_hpa",    room->latest.pressure_ok, room->latest.pressure_hpa);
+            add_num_or_null(ro, "illuminance_lux", room->latest.lux_ok,      room->latest.lux);
+            cJSON_AddItemToObject(node, "room", ro);
+        }
+    }
 
     return node;
 }
@@ -406,9 +449,17 @@ char *carl_node_registry_history_json(const char *id, const char *range) {
     return body;
 }
 
+// Copy a NUL-terminated field with truncation.
+static void meta_set_str(char *dst, size_t cap, const char *src) {
+    strncpy(dst, src, cap - 1);
+    dst[cap - 1] = '\0';
+}
+
 bool carl_node_registry_update_meta(const char *id,
                                      const char *name,
-                                     const carl_calibration_t *cal) {
+                                     const carl_calibration_t *cal,
+                                     const char *node_type,
+                                     const char *room_id) {
     if (s_lock == NULL) return false;
     xSemaphoreTake(s_lock, portMAX_DELAY);
     entry_t *e = find_by_id(id);
@@ -416,11 +467,10 @@ bool carl_node_registry_update_meta(const char *id,
         xSemaphoreGive(s_lock);
         return false;
     }
-    if (name != NULL) {
-        strncpy(e->meta.name, name, sizeof(e->meta.name) - 1);
-        e->meta.name[sizeof(e->meta.name) - 1] = '\0';
-    }
-    if (cal != NULL) e->meta.cal = *cal;
+    if (name != NULL)      meta_set_str(e->meta.name, sizeof(e->meta.name), name);
+    if (cal != NULL)       e->meta.cal = *cal;
+    if (node_type != NULL) meta_set_str(e->meta.node_type, sizeof(e->meta.node_type), node_type);
+    if (room_id != NULL)   meta_set_str(e->meta.room_id, sizeof(e->meta.room_id), room_id);
     meta_save_nvs(e->mac, &e->meta);
     xSemaphoreGive(s_lock);
     return true;
@@ -428,7 +478,9 @@ bool carl_node_registry_update_meta(const char *id,
 
 void carl_node_registry_set_meta_by_mac(const uint8_t mac6_le[6],
                                          const char *name,
-                                         const carl_calibration_t *cal) {
+                                         const carl_calibration_t *cal,
+                                         const char *node_type,
+                                         const char *room_id) {
     if (s_lock == NULL) return;
     xSemaphoreTake(s_lock, portMAX_DELAY);
 
@@ -437,12 +489,13 @@ void carl_node_registry_set_meta_by_mac(const uint8_t mac6_le[6],
     if (!meta_load_nvs(mac6_le, &m)) {
         m.cal = default_cal();
         mac_to_node_id(mac6_le, m.name);
+        strcpy(m.node_type, "plant");
+        m.room_id[0] = '\0';
     }
-    if (name != NULL) {
-        strncpy(m.name, name, sizeof(m.name) - 1);
-        m.name[sizeof(m.name) - 1] = '\0';
-    }
-    if (cal != NULL) m.cal = *cal;
+    if (name != NULL)      meta_set_str(m.name, sizeof(m.name), name);
+    if (cal != NULL)       m.cal = *cal;
+    if (node_type != NULL) meta_set_str(m.node_type, sizeof(m.node_type), node_type);
+    if (room_id != NULL)   meta_set_str(m.room_id, sizeof(m.room_id), room_id);
     meta_save_nvs(mac6_le, &m);
 
     // If the node has already been heard, apply immediately. Otherwise the

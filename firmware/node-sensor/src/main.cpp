@@ -145,6 +145,25 @@ void boot() {
 
 namespace {
 
+#ifdef CONFIG_CARL_DEEP_SLEEP
+// Deep-sleep power path: keep the BLE controller off between samples so the
+// radio draws nothing while the RTC-driven idle waits for the next sample.
+// boot() leaves BT enabled for the first cycle; we tear it down after the
+// first broadcast and re-enable just around each subsequent one.
+bool g_bt_on = true;
+
+void btEnsureOn() {
+    if (!g_bt_on && bt_enable(nullptr) == 0) g_bt_on = true;
+}
+void btPowerDown() {
+    if (g_bt_on) {
+        (void)bt_le_adv_stop();   // belt-and-braces; broadcastOnce already stops
+        (void)bt_disable();
+        g_bt_on = false;
+    }
+}
+#endif
+
 // Pick the next sample interval. In debug mode this is a fixed fast cadence
 // (CARL_DEBUG_SAMPLE_INTERVAL_SEC, default 1 s). In customer mode it's
 // adaptive — critical → fast, healthy → slow — to maximise battery life.
@@ -296,7 +315,13 @@ int main(void) {
             }
 #endif
 
+#ifdef CONFIG_CARL_DEEP_SLEEP
+            btEnsureOn();
+#endif
             carl::bthome_emit::broadcastOnce(s, severity);
+#ifdef CONFIG_CARL_DEEP_SLEEP
+            btPowerDown();   // radio off until the next sample
+#endif
 
             last_sample_ms     = now;
             prev_severity      = severity;

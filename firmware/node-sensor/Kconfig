@@ -99,6 +99,20 @@ config CARL_SOIL_FACTORY_WET_ADC
         Placeholder default — measure and set the real value. Must differ
         from the dry value.
 
+config CARL_DEEP_SLEEP
+    bool "Deep-sleep power path (tear down BLE between samples)"
+    default n
+    help
+        System ON idle deep sleep for long battery life. Between samples the
+        BLE controller is disabled (bt_disable) so the radio draws nothing,
+        and the RTC-driven tickless idle wakes the core at the next sample.
+        This is the CORRECT periodic-wake mechanism for the nRF52840 — System
+        OFF (sys_poweroff) cannot wake on a timer, only on GPIO/reset, so it is
+        NOT used here. Device PM (CONFIG_PM_DEVICE, already enabled) suspends
+        the sensors between reads. Intended for the cheap profile; validate the
+        average current with a Power Profiler before trusting the battery
+        estimate. Adds ~100 ms of active time per sample for bt_enable().
+
 config CARL_DEV_CAL
     bool "Dev-mode soil recalibration over the serial console"
     default n

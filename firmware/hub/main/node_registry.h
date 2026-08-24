@@ -86,20 +86,25 @@ char *carl_node_registry_history_json(const char *id, const char *range);
 
 // --- Mutations backing PATCH / DELETE / POST ---
 
-// Update a heard node's name and/or calibration by id (PATCH /api/nodes/{id}).
-// Pass name=NULL to leave the name unchanged, cal=NULL to leave cal unchanged.
+// Update a heard node's metadata by id (PATCH /api/nodes/{id}). Any of name /
+// cal / node_type / room_id may be NULL to leave that field unchanged.
+// node_type is "plant" or "room"; room_id links plants to their room node.
 // Persists to NVS. Returns false if no node with that id is known yet.
 bool carl_node_registry_update_meta(const char *id,
                                      const char *name,
-                                     const carl_calibration_t *cal);
+                                     const carl_calibration_t *cal,
+                                     const char *node_type,
+                                     const char *room_id);
 
-// Stash name/calibration for a MAC that may not have been heard yet
-// (POST /api/nodes provisions before the first ad arrives). Persists to NVS
-// keyed by MAC; applied to the registry entry when the node is first heard.
-// Pass NULL for either field to keep the existing/default value.
+// Stash metadata for a MAC that may not have been heard yet (POST /api/nodes
+// provisions before the first ad arrives). Persists to NVS keyed by MAC;
+// applied to the registry entry when the node is first heard. Pass NULL for
+// any field to keep the existing/default value.
 void carl_node_registry_set_meta_by_mac(const uint8_t mac6_le[6],
                                          const char *name,
-                                         const carl_calibration_t *cal);
+                                         const carl_calibration_t *cal,
+                                         const char *node_type,
+                                         const char *room_id);
 
 // Remove a node by id (DELETE /api/nodes/{id}). On success writes the node's
 // little-endian MAC to out_mac_le (so the caller can purge its AES key) and

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Carl Hub HTTP API
-  version: 0.2.0
+  version: 0.3.0
   description: |
     LAN-only HTTP API exposed by the Carl hub firmware (ESP32) at `http://carl-hub.local/`.
     The hub advertises `_carl-hub._tcp` via mDNS. No auth in v1 (LAN-only assumption).
@@ -178,11 +178,20 @@ components:
 
     Node:
       type: object
-      required: [id, mac, name, last_seen, online, latest]
+      required: [id, mac, name, node_type, room_id, last_seen, online, latest]
       properties:
         id: { type: string }
         mac: { type: string, example: "AA:BB:CC:DD:EE:FF" }
         name: { type: string, example: "Bedroom Monstera" }
+        node_type:
+          type: string
+          enum: [plant, room]
+          default: plant
+          description: "'plant' = soil probe; 'room' = ambient (T/H/P/lux) node for a whole room."
+        room_id:
+          type: string
+          example: "living-room"
+          description: Links a plant to its room node; empty if unassigned.
         last_seen: { type: string, format: date-time }
         online: { type: boolean }
         battery_pct:
@@ -194,6 +203,11 @@ components:
           $ref: "#/components/schemas/Reading"
         calibration:
           $ref: "#/components/schemas/Calibration"
+        room:
+          $ref: "#/components/schemas/RoomEnv"
+          description: >
+            Present on plant nodes that share a room_id with a room node — the
+            room's latest ambient environment, grafted on by the hub.
 
     Reading:
       type: object
@@ -215,6 +229,18 @@ components:
         battery_low_pct: { type: integer, default: 15 }
         offline_after_minutes: { type: integer, default: 30 }
 
+    RoomEnv:
+      type: object
+      description: A room node's latest ambient reading, joined onto plants in that room.
+      required: [source, ts]
+      properties:
+        source: { type: string, description: id of the room node this came from }
+        ts: { type: string, format: date-time }
+        temperature_c: { type: number, nullable: true }
+        humidity_pct: { type: number, nullable: true }
+        pressure_hpa: { type: number, nullable: true }
+        illuminance_lux: { type: number, nullable: true }
+
     NodeCreate:
       type: object
       required: [mac, key_hex, name]
@@ -229,6 +255,12 @@ components:
           description: 16-byte AES-CCM key, lowercase hex
         name:
           type: string
+        node_type:
+          type: string
+          enum: [plant, room]
+          default: plant
+        room_id:
+          type: string
         calibration:
           $ref: "#/components/schemas/Calibration"
 
@@ -236,6 +268,11 @@ components:
       type: object
       properties:
         name: { type: string }
+        node_type:
+          type: string
+          enum: [plant, room]
+        room_id:
+          type: string
         calibration:
           $ref: "#/components/schemas/Calibration"
 

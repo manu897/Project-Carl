@@ -186,7 +186,12 @@ static esp_err_t handle_nodes_post(httpd_req_t *req) {
     carl_calibration_t cal = default_calibration();
     const cJSON *j_cal = cJSON_GetObjectItem(root, "calibration");
     if (cJSON_IsObject(j_cal)) parse_calibration(j_cal, &cal);
-    carl_node_registry_set_meta_by_mac(mac_le, name, &cal);
+    const cJSON *j_type = cJSON_GetObjectItem(root, "node_type");
+    const cJSON *j_room = cJSON_GetObjectItem(root, "room_id");
+    carl_node_registry_set_meta_by_mac(
+        mac_le, name, &cal,
+        cJSON_IsString(j_type) ? j_type->valuestring : NULL,
+        cJSON_IsString(j_room) ? j_room->valuestring : NULL);
 
     // Spec-shaped Node placeholder. The node hasn't been heard yet, so
     // last_seen/latest carry "now" with null readings (the Node schema marks
@@ -275,7 +280,13 @@ static esp_err_t handle_node_patch(httpd_req_t *req) {
     bool has_cal = cJSON_IsObject(j_cal);
     if (has_cal) parse_calibration(j_cal, &cal);
 
-    if (!carl_node_registry_update_meta(id, name, has_cal ? &cal : NULL)) {
+    const cJSON *j_type = cJSON_GetObjectItem(root, "node_type");
+    const cJSON *j_room = cJSON_GetObjectItem(root, "room_id");
+
+    if (!carl_node_registry_update_meta(
+            id, name, has_cal ? &cal : NULL,
+            cJSON_IsString(j_type) ? j_type->valuestring : NULL,
+            cJSON_IsString(j_room) ? j_room->valuestring : NULL)) {
         send_error(req, "404 Not Found", "not_found", "no such node");
         cJSON_Delete(root); return ESP_OK;
     }
