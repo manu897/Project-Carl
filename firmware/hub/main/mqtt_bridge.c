@@ -1,5 +1,11 @@
 #include "mqtt_bridge.h"
 
+// ESP-IDF does NOT make CONFIG_* Kconfig macros visible automatically — every
+// file that checks one must include this generated header explicitly.
+// Without it, CONFIG_CARL_MQTT_HA_ENABLE is silently undefined here, so the
+// #ifdef always fell through to the empty stub regardless of menuconfig.
+#include "sdkconfig.h"
+
 #ifdef CONFIG_CARL_MQTT_HA_ENABLE
 
 #include <stdio.h>

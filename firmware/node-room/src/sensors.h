@@ -11,6 +11,14 @@
 
 namespace carl::room::sensors {
 
+// Heuristic air-quality bucket derived from BME688 gas resistance, relative
+// to a self-learned "cleanest air seen" baseline. NOT a calibrated VOC/IAQ
+// value — that needs Bosch's proprietary BSEC library, which this firmware
+// doesn't link. Local-feedback only (RGB); deliberately not broadcast over
+// BTHome, since mislabeling a heuristic as the wire format's VOC object
+// (which expects real µg/m³) would misrepresent the data to Home Assistant.
+enum class AirQuality : uint8_t { kUnknown, kGood, kModerate, kPoor };
+
 struct Sample {
     bool     temp_ok;
     float    temperature_c;   // °C — BME688
@@ -28,6 +36,7 @@ struct Sample {
     // for future use / OLED debug.
     bool     gas_ok;
     uint32_t gas_resistance_ohm;
+    AirQuality air_quality;   // heuristic bucket from gas_resistance_ohm; kUnknown if !gas_ok
 
     uint8_t  battery_pct;     // 0..100 % — VBAT divider on ADC ch 2
 };

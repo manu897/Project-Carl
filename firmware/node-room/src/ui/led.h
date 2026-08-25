@@ -31,4 +31,11 @@ void flashGreen(int ms = 80);
 // Brief red flash (blocking for `ms` milliseconds).
 void flashRed(int ms = 150);
 
+// `count` blinks of (r,g,b), each on for `on_ms` with `gap_ms` between,
+// ending dark. Blocking. Used for status alerts (battery-low, poor air)
+// layered onto the normal per-broadcast blink — blink count distinguishes
+// which condition without needing more colours.
+void blinkStatus(uint8_t r, uint8_t g, uint8_t b, int count,
+                  int on_ms = 120, int gap_ms = 120);
+
 }  // namespace carl::room::ui::led

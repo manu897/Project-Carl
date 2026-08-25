@@ -72,6 +72,53 @@ bool decodeNodesArray(JsonArrayConst arr, NodeList* out) {
     return true;
 }
 
+bool decodeHistoryArray(JsonArrayConst arr, History* out) {
+    out->count = 0;
+    for (JsonObjectConst entry : arr) {
+        if (out->count >= History::kMaxSamples) break;
+        readReading(entry, &out->samples[out->count++]);
+    }
+    out->fetch_ok = true;
+    out->err_msg[0] = '\0';
+    return true;
+}
+
+#ifndef CARL_READER_USE_MOCK
+// Resolve g_base_url + a path/query suffix into a request-ready URL,
+// working around Arduino-ESP32 HTTPClient not resolving .local hostnames
+// via mDNS itself (it hands them straight to gethostbyname(), which most
+// home routers don't relay). Shared by fetchNodes() and fetchHistory() so
+// the resolution logic lives in exactly one place.
+bool resolveUrl(const char* path_and_query, char* out_url, size_t cap,
+                char* err_msg, size_t err_cap) {
+    if (std::strstr(g_base_url, ".local") == nullptr) {
+        std::snprintf(out_url, cap, "%s%s", g_base_url, path_and_query);
+        return true;
+    }
+    // Pull "carl-hub" out of "http://carl-hub.local"
+    const char *host_start = std::strstr(g_base_url, "//");
+    host_start = (host_start == nullptr) ? g_base_url : host_start + 2;
+    const char *host_end = std::strchr(host_start, '.');
+    if (host_end == nullptr) host_end = host_start + std::strlen(host_start);
+    char hostname[40];
+    const size_t n = host_end - host_start;
+    if (n >= sizeof(hostname)) {
+        std::strncpy(err_msg, "hostname too long", err_cap);
+        return false;
+    }
+    std::memcpy(hostname, host_start, n);
+    hostname[n] = '\0';
+
+    IPAddress ip = MDNS.queryHost(hostname, 3000);
+    if (ip == INADDR_NONE || ip == IPAddress(0, 0, 0, 0)) {
+        std::snprintf(err_msg, err_cap, "mdns: %s.local unreachable", hostname);
+        return false;
+    }
+    std::snprintf(out_url, cap, "http://%s%s", ip.toString().c_str(), path_and_query);
+    return true;
+}
+#endif
+
 #ifdef CARL_READER_USE_MOCK
 constexpr const char* kMockJson = R"JSON([
   {
@@ -109,6 +156,25 @@ constexpr const char* kMockJson = R"JSON([
     }
   }
 ])JSON";
+
+// A plausible 24h soil curve for node-1: watered around 06:00 (soil near
+// 60%), drying out through the day down toward 20% by evening — enough
+// shape to sanity-check the detail-page graph without a hub attached.
+constexpr const char* kMockHistoryJson = R"JSON({
+  "node_id": "node-1",
+  "range": "24h",
+  "samples": [
+    {"ts": "2026-05-04T06:00:00Z", "soil_pct": 61.0, "temperature_c": 20.1, "humidity_pct": 44.0},
+    {"ts": "2026-05-04T08:00:00Z", "soil_pct": 55.0, "temperature_c": 20.8, "humidity_pct": 43.0},
+    {"ts": "2026-05-04T10:00:00Z", "soil_pct": 48.0, "temperature_c": 21.6, "humidity_pct": 42.0},
+    {"ts": "2026-05-04T12:00:00Z", "soil_pct": 41.0, "temperature_c": 22.5, "humidity_pct": 41.0},
+    {"ts": "2026-05-04T14:00:00Z", "soil_pct": 38.0, "temperature_c": 22.4, "humidity_pct": 47.2},
+    {"ts": "2026-05-04T16:00:00Z", "soil_pct": 32.0, "temperature_c": 22.0, "humidity_pct": 45.0},
+    {"ts": "2026-05-04T18:00:00Z", "soil_pct": 27.0, "temperature_c": 21.5, "humidity_pct": 44.0},
+    {"ts": "2026-05-04T20:00:00Z", "soil_pct": 23.0, "temperature_c": 20.9, "humidity_pct": 44.0},
+    {"ts": "2026-05-04T22:00:00Z", "soil_pct": 20.0, "temperature_c": 20.3, "humidity_pct": 45.0}
+  ]
+})JSON";
 #endif
 
 }  // namespace
@@ -135,40 +201,10 @@ bool fetchNodes(NodeList* out) {
         return false;
     }
 
-    // Arduino-ESP32 HTTPClient doesn't resolve .local hostnames via mDNS —
-    // it just hands them to gethostbyname() which uses regular DNS. Most
-    // home routers don't relay mDNS to DNS, so the request fails with -1.
-    // Workaround: extract the hostname, resolve via ESPmDNS ourselves,
-    // then build a URL with the IP.
     char url[128];
-    if (std::strstr(g_base_url, ".local") != nullptr) {
-        // Pull "carl-hub" out of "http://carl-hub.local"
-        const char *host_start = std::strstr(g_base_url, "//");
-        if (host_start == nullptr) host_start = g_base_url;
-        else host_start += 2;
-        const char *host_end = std::strchr(host_start, '.');
-        if (host_end == nullptr) host_end = host_start + std::strlen(host_start);
-        char hostname[40];
-        const size_t n = host_end - host_start;
-        if (n >= sizeof(hostname)) {
-            out->fetch_ok = false;
-            std::strncpy(out->err_msg, "hostname too long", sizeof(out->err_msg));
-            return false;
-        }
-        std::memcpy(hostname, host_start, n);
-        hostname[n] = '\0';
-
-        IPAddress ip = MDNS.queryHost(hostname, 3000);
-        if (ip == INADDR_NONE || ip == IPAddress(0, 0, 0, 0)) {
-            out->fetch_ok = false;
-            std::snprintf(out->err_msg, sizeof(out->err_msg),
-                          "mdns: %s.local unreachable", hostname);
-            return false;
-        }
-        std::snprintf(url, sizeof(url), "http://%s/api/nodes",
-                      ip.toString().c_str());
-    } else {
-        std::snprintf(url, sizeof(url), "%s/api/nodes", g_base_url);
+    if (!resolveUrl("/api/nodes", url, sizeof(url), out->err_msg, sizeof(out->err_msg))) {
+        out->fetch_ok = false;
+        return false;
     }
 
     HTTPClient http;
@@ -194,6 +230,59 @@ bool fetchNodes(NodeList* out) {
         return false;
     }
     return decodeNodesArray(doc.as<JsonArrayConst>(), out);
+#endif
+}
+
+bool fetchHistory(const char* node_id, const char* range, History* out) {
+    JsonDocument doc;
+#ifdef CARL_READER_USE_MOCK
+    (void)node_id; (void)range;
+    auto err = deserializeJson(doc, kMockHistoryJson);
+    if (err) {
+        out->fetch_ok = false;
+        std::snprintf(out->err_msg, sizeof(out->err_msg),
+                      "mock parse: %s", err.c_str());
+        return false;
+    }
+    return decodeHistoryArray(doc["samples"].as<JsonArrayConst>(), out);
+#else
+    if (WiFi.status() != WL_CONNECTED) {
+        out->fetch_ok = false;
+        std::strncpy(out->err_msg, "wifi down", sizeof(out->err_msg));
+        return false;
+    }
+
+    char path[80];
+    std::snprintf(path, sizeof(path), "/api/nodes/%s/history?range=%s", node_id, range);
+    char url[160];
+    if (!resolveUrl(path, url, sizeof(url), out->err_msg, sizeof(out->err_msg))) {
+        out->fetch_ok = false;
+        return false;
+    }
+
+    HTTPClient http;
+    http.setTimeout(5000);
+    if (!http.begin(url)) {
+        out->fetch_ok = false;
+        std::strncpy(out->err_msg, "http begin failed", sizeof(out->err_msg));
+        return false;
+    }
+    const int code = http.GET();
+    if (code != 200) {
+        out->fetch_ok = false;
+        std::snprintf(out->err_msg, sizeof(out->err_msg), "http %d", code);
+        http.end();
+        return false;
+    }
+    auto err = deserializeJson(doc, http.getStream());
+    http.end();
+    if (err) {
+        out->fetch_ok = false;
+        std::snprintf(out->err_msg, sizeof(out->err_msg),
+                      "json: %s", err.c_str());
+        return false;
+    }
+    return decodeHistoryArray(doc["samples"].as<JsonArrayConst>(), out);
 #endif
 }
 

@@ -93,6 +93,34 @@ uint8_t batteryPctFromMv(uint16_t mv) {
 // light" buckets.
 constexpr float kBh1749GreenToLux = 1.0f / 19.0f;
 
+// Rolling-baseline air-quality heuristic. BME688 gas resistance rises with
+// cleaner air; without BSEC there's no calibrated absolute scale, so we
+// track the highest resistance seen ("cleanest air observed") and classify
+// the current reading relative to it. The baseline only ever rises
+// immediately (a cleaner moment is trustworthy right away) and decays
+// slowly on every sample otherwise (~0.1%/sample — hours to fully
+// re-baseline down), so a new lasting steady-state — windows opened,
+// incense burned — doesn't get stuck flagged "poor" forever.
+float g_gas_baseline_ohm = 0.0f;
+
+AirQuality classifyAirQuality(uint32_t gas_ohm) {
+    if (gas_ohm == 0) return AirQuality::kUnknown;
+    const float g = static_cast<float>(gas_ohm);
+    if (g_gas_baseline_ohm <= 0.0f) {
+        g_gas_baseline_ohm = g;  // first-ever reading seeds the baseline
+        return AirQuality::kGood;
+    }
+    if (g > g_gas_baseline_ohm) {
+        g_gas_baseline_ohm = g;
+    } else {
+        g_gas_baseline_ohm *= 0.999f;
+    }
+    const float ratio = g / g_gas_baseline_ohm;
+    if (ratio >= 0.90f) return AirQuality::kGood;
+    if (ratio >= 0.70f) return AirQuality::kModerate;
+    return AirQuality::kPoor;
+}
+
 }  // namespace
 
 bool init() {
@@ -146,6 +174,7 @@ bool sample(Sample* out) {
         if (sensor_channel_get(g_bme, SENSOR_CHAN_GAS_RES, &v) == 0) {
             out->gas_resistance_ohm = static_cast<uint32_t>(sensor_value_to_double(&v));
             out->gas_ok = true;
+            out->air_quality = classifyAirQuality(out->gas_resistance_ohm);
         }
     }
 

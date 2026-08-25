@@ -53,4 +53,13 @@ void flashRed(int ms) {
     off();
 }
 
+void blinkStatus(uint8_t r, uint8_t g, uint8_t b, int count, int on_ms, int gap_ms) {
+    for (int i = 0; i < count; ++i) {
+        setRGB(r, g, b);
+        k_msleep(on_ms);
+        off();
+        if (i + 1 < count) k_msleep(gap_ms);
+    }
+}
+
 }  // namespace carl::room::ui::led

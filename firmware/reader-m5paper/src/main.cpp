@@ -36,6 +36,19 @@
 
 namespace {
 
+// Two pages: the card grid (default) and a per-plant detail view with a
+// history graph, reached by tapping a card. State lives here in main.cpp —
+// dashboard.cpp only draws what it's told to.
+enum class Page { kGrid, kDetail };
+Page   g_page = Page::kGrid;
+size_t g_detail_index = 0;
+
+// Last successfully fetched list — kept around so returning from the detail
+// page can redraw the grid without waiting for the next poll, and so
+// hitTestCard() has something to test against between polls.
+carl::hub::NodeList g_list{};
+bool g_have_list = false;
+
 uint32_t lastListHash(const carl::hub::NodeList& list) {
     // Cheap content fingerprint — enough to skip a redundant e-paper
     // refresh when nothing meaningful changed since last poll. Hashes the
@@ -59,6 +72,50 @@ uint32_t lastListHash(const carl::hub::NodeList& list) {
         mix(&n.latest.soil_pct, sizeof(n.latest.soil_pct));
     }
     return h;
+}
+
+// Check for a touch and act on it immediately: switch pages, fetch history
+// on entering the detail page, redraw. Called every ~200ms from both the
+// main poll cycle and the inter-poll wait so taps feel responsive even
+// though network polling itself is slow (10-60s).
+void pollTouch() {
+    if (!carl::dashboard::consumeTouch()) return;
+    int tx = 0, ty = 0;
+    carl::dashboard::lastTouchPoint(&tx, &ty);
+
+    if (g_page == Page::kGrid) {
+        if (!g_have_list) return;
+        const int idx = carl::dashboard::hitTestCard(g_list, tx, ty);
+        if (idx < 0) return;  // tap missed every card — ignore
+
+        g_detail_index = static_cast<size_t>(idx);
+        g_page = Page::kDetail;
+
+        // Fetched once on entry, not on every poll — history doesn't need
+        // second-by-second freshness and a hub fetch shouldn't block the
+        // page transition from feeling instant.
+        //
+        // `static` is deliberate: History is ~4 KB (48 samples), and
+        // pollTouch() runs every ~200ms on the Arduino loop task's small
+        // default stack (~8 KB) — a plain local here reserves that 4 KB on
+        // EVERY call regardless of whether this branch even runs (a
+        // function's stack frame is sized for its whole scope, not just
+        // the taken branch), stacked on top of loop()'s own ~4 KB NodeList
+        // local. That's most of the stack budget gone on nearly every tick
+        // — a guaranteed overflow/reboot loop. Static storage moves it to
+        // .bss instead; safe here since this task is the only caller.
+        static carl::hub::History history{};
+        history = carl::hub::History{};
+        if (!carl::hub::fetchHistory(g_list.nodes[g_detail_index].id, "24h", &history)) {
+            Serial.printf("[carl-reader] history fetch failed: %s\n", history.err_msg);
+        }
+        carl::dashboard::showNodeDetail(g_list.nodes[g_detail_index], history);
+    } else {  // Page::kDetail
+        if (carl::dashboard::isBackTouch(tx, ty)) {
+            g_page = Page::kGrid;
+            if (g_have_list) carl::dashboard::showNodeList(g_list);
+        }
+    }
 }
 
 }  // namespace
@@ -106,25 +163,41 @@ void setup() {
 void loop() {
     static uint32_t last_hash = 0;
 
+    pollTouch();  // pick up any tap that landed since the last iteration
+
     carl::dashboard::showStatus("Fetching plants…");
-    carl::hub::NodeList list{};
-    const bool ok = carl::hub::fetchNodes(&list);
+    // Fetch straight into g_list rather than a local NodeList — that struct
+    // is ~4 KB (16 nodes) and this is called every poll on the Arduino loop
+    // task's small default stack; see the History comment in pollTouch()
+    // for the full stack-overflow story this avoids. Bonus: fetchNodes()
+    // doesn't touch count/nodes on its failure paths, so g_list's previous
+    // good contents survive a failed poll automatically — "keep last view"
+    // for free, no separate copy-on-success step needed.
+    const bool ok = carl::hub::fetchNodes(&g_list);
 
     if (!ok) {
         char msg[80];
         std::snprintf(msg, sizeof(msg), "Hub fetch: %s — keeping last view",
-                      list.err_msg);
+                      g_list.err_msg);
         carl::dashboard::showStatus(msg);
         Serial.printf("[carl-reader] %s\n", msg);
     } else {
-        const uint32_t h = lastListHash(list);
-        if (h != last_hash) {
-            carl::dashboard::showNodeList(list);
-            last_hash = h;
-            Serial.printf("[carl-reader] redraw — %u plants\n",
-                          static_cast<unsigned>(list.count));
-        } else {
-            Serial.println("[carl-reader] no changes — skipping repaint");
+        g_have_list = true;
+
+        // Only the grid page redraws on a poll. The detail page deliberately
+        // stays on-screen until the user taps "< Back" — a full GC16 refresh
+        // every 10-60s while someone's reading the history graph would be
+        // distracting on e-paper, and the graph doesn't need that freshness.
+        if (g_page == Page::kGrid) {
+            const uint32_t h = lastListHash(g_list);
+            if (h != last_hash) {
+                carl::dashboard::showNodeList(g_list);
+                last_hash = h;
+                Serial.printf("[carl-reader] redraw — %u plants\n",
+                              static_cast<unsigned>(g_list.count));
+            } else {
+                Serial.println("[carl-reader] no changes — skipping repaint");
+            }
         }
         carl::dashboard::showStatus("Up to date");
     }
@@ -140,6 +213,7 @@ void loop() {
     const uint32_t target = millis() + poll_sec * 1000UL;
     while (millis() < target) {
         M5.update();
+        pollTouch();  // keep taps responsive during the long inter-poll wait
         delay(200);
     }
 }

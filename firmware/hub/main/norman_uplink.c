@@ -1,5 +1,13 @@
 #include "norman_uplink.h"
 
+// ESP-IDF does NOT make CONFIG_* Kconfig macros visible automatically — every
+// file that checks one must include this generated header explicitly.
+// Without it, CONFIG_CARL_NORMAN_ENABLE is silently undefined and the #ifdef
+// below always falls through to the empty stub, no matter what's set in
+// menuconfig/sdkconfig. (Bug found 2026-08-25 — norman_uplink.c and
+// mqtt_bridge.c both omitted this; key_store.c had it right from the start.)
+#include "sdkconfig.h"
+
 #ifdef CONFIG_CARL_NORMAN_ENABLE
 
 #include <stdio.h>

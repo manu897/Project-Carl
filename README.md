@@ -24,7 +24,7 @@ A home plant-monitoring system that scales from one plant to a houseful. Sensor 
           HTTP server (mDNS: carl-hub.local)
           REST API for key provisioning + node data
           Optional MQTT bridge to Home Assistant
-          Optional daily HTTPS POST to Project-Norman (cloud / ML)
+          Optional continuous MQTT uplink to Project-Norman (cloud / ML)
                   |                            |
                   v                            v
    +---------------------------+    [Home Assistant → HomePod]
@@ -96,7 +96,7 @@ idf.py build flash monitor
 cd firmware/reader-m5paper
 pio run -t upload
 # Mock mode (no hub needed):
-pio run -e m5paper -- -DCARL_READER_USE_MOCK -t upload
+PLATFORMIO_BUILD_FLAGS="-DCARL_READER_USE_MOCK" pio run -e m5paper -t upload
 ```
 
 ## First-boot setup
@@ -145,6 +145,23 @@ With no stored credentials the hub starts a SoftAP **`Carl-Hub-Setup`** and a ca
 
 Timestamps are real ISO-8601 UTC once the hub syncs time via SNTP (a few seconds after Wi-Fi connects). History is held in RAM (~24h at the normal cadence); long-term history is owned by [Project-Norman](https://github.com/manu897/Project-Norman) via the periodic upload.
 
+### Connecting a hub to Project-Norman
+
+The hub's `norman_uplink.c` and Norman's ingest worker already agree on the wire format (topic, fields, QoS, auth) — pointing a hub at a live deployment is pure configuration, no firmware changes needed. One-time setup:
+
+1. **Create a Norman account** — via the Carl iOS app (Settings → Away from home → Cloud account → Create Account), or `POST /v1/auth/register` on the Norman API directly.
+2. **Register the hub under that account** (needs the JWT from step 1 — the iOS app doesn't yet have a UI for this, so it's a manual API call for now):
+   ```bash
+   curl -sX POST https://<norman-host>/v1/hubs \
+     -H "Authorization: Bearer <access_token>" \
+     -H "Content-Type: application/json" \
+     -d '{"id":"hub-002","name":"Home Hub"}'
+   ```
+   Pick any unique `id` — it becomes `CARL_NORMAN_SITE_ID` below. Norman silently drops MQTT messages from an unregistered site_id, so this must happen before the hub starts publishing.
+3. **Get the broker credentials** from the Norman operator's `.env` (`MQTT_PASSWORD`; username is a fixed shared value, e.g. `carl`).
+4. **Configure the hub**: `idf.py menuconfig` → *Carl Hub configuration → Project-Norman cloud uplink (optional)* → set `CARL_NORMAN_ENABLE=y`, `CARL_NORMAN_BROKER_URI="mqtts://<host>:8883"`, `CARL_NORMAN_USERNAME`, `CARL_NORMAN_PASSWORD`, `CARL_NORMAN_SITE_ID` (must match step 2's `id`). **Paste carefully** — a stray leading tab/space in the broker URI (easy to introduce via copy-paste into the menuconfig text field) silently breaks the MQTT connection.
+5. **Build, flash, verify**: `idf.py build flash monitor`. Look for `carl-norman: connected to Norman` in the log shortly after Wi-Fi comes up. Repeated `carl-norman: disconnected` lines instead of a stable connection means bad credentials or a malformed broker URI — re-check the `sdkconfig` values directly (`grep CARL_NORMAN sdkconfig`) if menuconfig entry seems to have gone wrong.
+
 ## Hardware
 
 - **Hub** — any ESP32-S3 dev board (ESP32-S3-DevKitC-1 preferred for PSRAM).
@@ -155,7 +172,7 @@ Timestamps are real ISO-8601 UTC once the hub syncs time via SNTP (a few seconds
 
 ## Security
 
-Every BLE advertisement is encrypted with AES-CCM-128 using a per-node key generated at first boot. The hub stores keys in NVS flash, the BTHome 4-byte counter prevents replay. The hub's REST API is LAN-only by default; cloud upload to Project-Norman is opt-in and uses a configured bearer token.
+Every BLE advertisement is encrypted with AES-CCM-128 using a per-node key generated at first boot. The hub stores keys in NVS flash, the BTHome 4-byte counter prevents replay. The hub's REST API is LAN-only by default; cloud upload to Project-Norman is opt-in and authenticates with an MQTT username/password over TLS (`mqtts://`).
 
 ## Related projects
 

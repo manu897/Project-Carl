@@ -12,4 +12,14 @@ config CARL_ROOM_SAMPLE_INTERVAL_SEC
         with stable conditions can extend this to 5–10 minutes. T/H/P/lux
         change on minute timescales so faster cadence is wasteful.
 
+config CARL_ROOM_BATTERY_LOW_PCT
+    int "Battery-low RGB warning threshold (%)"
+    default 15
+    range 0 100
+    help
+        Below this level, a successful broadcast blinks amber instead of
+        green so a glance at the node signals "needs a charge" without
+        checking the dashboard. Matches the hub's default battery_low_pct
+        calibration value for consistency.
+
 endmenu

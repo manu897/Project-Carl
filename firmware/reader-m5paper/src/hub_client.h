@@ -45,6 +45,18 @@ struct NodeList {
     char    err_msg[64];
 };
 
+// Result of a GET /api/nodes/{id}/history?range=... call. Samples arrive
+// oldest-first, matching the hub's node_registry.c ring-buffer order.
+// kMaxSamples matches the hub's HIST_CAP (48) so a full history response
+// decodes without truncation.
+struct History {
+    static constexpr size_t kMaxSamples = 48;
+    Reading samples[kMaxSamples];
+    size_t  count;
+    bool    fetch_ok;
+    char    err_msg[64];
+};
+
 // Set the hub base URL. Default is "http://carl-hub.local". Override if
 // the user's mDNS is flaky and they configured an IP via the touch UI.
 void setBaseUrl(const char* url);
@@ -53,5 +65,12 @@ void setBaseUrl(const char* url);
 // success. Real network call when CARL_READER_USE_MOCK is unset; canned
 // data otherwise.
 bool fetchNodes(NodeList* out);
+
+// Synchronously fetch /api/nodes/{node_id}/history?range={range} (range is
+// "24h", "7d", or "30d" — matches the hub's OpenAPI contract) and decode
+// into `out`. Returns true on success. Mocked with a plausible declining/
+// recovering soil curve when CARL_READER_USE_MOCK is set, so the detail
+// page + graph can be bench-tested with no hub attached.
+bool fetchHistory(const char* node_id, const char* range, History* out);
 
 }  // namespace carl::hub
