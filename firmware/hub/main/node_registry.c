@@ -351,11 +351,13 @@ void carl_node_registry_foreach(carl_node_visit_fn fn, void *user) {
         char mac_str[18]; mac_to_str(e->mac, mac_str);
         char id_str[16];  mac_to_node_id(e->mac, id_str);
         carl_node_snapshot_t snap = {
-            .id     = id_str,
-            .name   = e->meta.name,
-            .mac    = mac_str,
-            .online = node_is_online(e, now_us),
-            .latest = e->latest,
+            .id        = id_str,
+            .name      = e->meta.name,
+            .mac       = mac_str,
+            .node_type = node_type_of(e),
+            .room_id   = e->meta.room_id,
+            .online    = node_is_online(e, now_us),
+            .latest    = e->latest,
         };
         fn(&snap, user);
     }

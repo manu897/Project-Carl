@@ -39,6 +39,16 @@ static void publish_node(const carl_node_snapshot_t *n, void *user) {
     cJSON_AddStringToObject(o, "node", n->id);
     cJSON_AddStringToObject(o, "mac", n->mac);
     cJSON_AddStringToObject(o, "name", n->name);
+    // Bug found 2026-08-26 (via the iOS + Norman sessions): this payload never
+    // carried node classification, so Norman's MQTT ingest had nothing to key
+    // off and hardcoded every node — including real room nodes — as "plant"
+    // on first insert. carl_node_snapshot_t now carries node_type/room_id
+    // (added for the hub's own REST API #16 room-join feature, but never
+    // threaded through to the MQTT payload until now).
+    cJSON_AddStringToObject(o, "node_type", n->node_type);
+    if (n->room_id != NULL && n->room_id[0] != '\0') {
+        cJSON_AddStringToObject(o, "room_id", n->room_id);
+    }
     cJSON_AddBoolToObject(o, "online", n->online);
     if (r->soil_ok)     cJSON_AddNumberToObject(o, "soil_pct", r->soil_pct);
     if (r->temp_ok)     cJSON_AddNumberToObject(o, "temperature_c", r->temp_c);

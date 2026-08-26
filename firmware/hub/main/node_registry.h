@@ -59,11 +59,13 @@ unsigned carl_node_registry_count(void);
 // Read-only snapshot of one node, handed to a visitor callback. The string
 // pointers are valid only for the duration of the callback.
 typedef struct {
-    const char           *id;     // "node-AABB"
+    const char           *id;         // "node-AABB"
     const char           *name;
-    const char           *mac;    // "AA:BB:CC:DD:EE:FF"
+    const char           *mac;        // "AA:BB:CC:DD:EE:FF"
+    const char           *node_type;  // "plant" | "room" — see node_to_json's node_type_of()
+    const char           *room_id;    // "" if unassigned
     bool                  online;
-    carl_reading_t        latest; // merged latest reading
+    carl_reading_t        latest;     // merged latest reading
 } carl_node_snapshot_t;
 
 typedef void (*carl_node_visit_fn)(const carl_node_snapshot_t *snap, void *user);
