@@ -1,5 +1,18 @@
 # Carl tools
 
+## `env-ncs.sh` / `env-esp.sh` — toolchain activation
+
+Each firmware target needs its vendor toolchain on `PATH`. Source the right one **once per terminal** before building — `west` for the two Zephyr targets (node-sensor, node-room), `idf.py` for the hub. Both auto-detect the installed SDK path, so they keep working across SDK updates.
+
+```bash
+source tools/env-ncs.sh     # → west (node-sensor, node-room)
+source tools/env-esp.sh     # → idf.py (hub)
+```
+
+M5Paper needs neither — PlatformIO manages its own toolchain per-project (`pio run` just works from `firmware/reader-m5paper/`).
+
+Must be `source`d, not executed (`./tools/env-ncs.sh` won't work — it needs to modify your current shell's `PATH`).
+
 ## `provision.py` — stick-on QR label generator
 
 The budget/cheap plant probe has no screen, so it can't show its provisioning

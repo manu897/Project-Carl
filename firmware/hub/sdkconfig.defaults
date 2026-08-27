@@ -16,7 +16,7 @@ CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=n
 CONFIG_BT_NIMBLE_ROLE_BROADCASTER=n
 CONFIG_BT_NIMBLE_EXT_ADV=n
 
-# --- Wi-Fi (station mode for now; SoftAP added in Phase 3f) ---
+# --- Wi-Fi (station mode with SoftAP-setup fallback on first boot) ---
 CONFIG_ESP_WIFI_ENABLED=y
 CONFIG_LWIP_DHCP_RESTORE_LAST_IP=y
 CONFIG_MDNS_RESOLVE_TEST_SERVICES=n
@@ -24,6 +24,20 @@ CONFIG_MDNS_RESOLVE_TEST_SERVICES=n
 # --- HTTP server (web dashboard + REST API) ---
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=2048
 CONFIG_HTTPD_MAX_URI_LEN=512
+
+# --- Network socket budget ---
+# ESP-IDF's default (10) is shared across the WHOLE IP stack: the HTTP
+# server's listen socket + up to 7 concurrent client connections, mDNS,
+# SNTP's UDP socket, and (when enabled) the HA/Norman MQTT bridges' TCP
+# sockets. With the dashboard open in a browser (was polling 2 endpoints
+# concurrently every 10s — see data/index.html) plus the M5Paper reader
+# polling separately, this ceiling got hit in practice: raw accept() started
+# failing with errno 23 (ENFILE), logged as "httpd_accept_conn: error in
+# accept" — httpd's own LRU-eviction (lru_purge_enable in http_api.c) never
+# even got a chance to run because the failure is one layer below it, at the
+# global socket-table level. Bumped with headroom above the worst case
+# (listen + 7 httpd clients + mDNS + SNTP + 2 MQTT bridges ≈ 13).
+CONFIG_LWIP_MAX_SOCKETS=16
 
 # --- Flash + partition table ---
 # WROOM-32U has 4 MB flash; default Kconfig assumes 2 MB which would reject

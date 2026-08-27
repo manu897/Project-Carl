@@ -91,13 +91,14 @@ idf.py menuconfig   # set Wi-Fi SSID/password under "Carl Hub configuration"
 idf.py build flash monitor
 ```
 
-**M5Paper reader** (PlatformIO + Arduino):
+**M5Paper reader** (PlatformIO + Arduino) — always-on card grid; tap a card for a full-screen detail page with a history graph:
 ```bash
 cd firmware/reader-m5paper
 pio run -t upload
 # Mock mode (no hub needed):
 PLATFORMIO_BUILD_FLAGS="-DCARL_READER_USE_MOCK" pio run -e m5paper -t upload
 ```
+See [firmware/reader-m5paper/README.md](firmware/reader-m5paper/README.md) for the touch/detail-page details.
 
 ## First-boot setup
 
@@ -177,7 +178,7 @@ Every BLE advertisement is encrypted with AES-CCM-128 using a per-node key gener
 ## Related projects
 
 - [Project-Norman](https://github.com/manu897/Project-Norman) — cloud side. Owns ingestion, storage, ML for plant-health analysis, and long-term dashboards. The Carl-Norman boundary is MQTT (continuous) from the hub.
-- [Project-Carl-IOS](https://github.com/manu897/Project-Carl-IOS) — native iOS app. Home + PlantDetail views running on fixtures; depends on the hub's OpenAPI spec.
+- [Project-Carl-IOS](https://github.com/manu897/Project-Carl-IOS) — native iOS app. Real LAN (hub) + cloud (Norman) connectivity with a mock-data toggle for bench work, QR + manual node provisioning, room-vs-plant aware rendering, offline cache with staleness indication. Depends on the hub's OpenAPI spec (mirrored into that repo, kept in sync with [documents/api/openapi.yaml](documents/api/openapi.yaml)).
 
 ## Author
 

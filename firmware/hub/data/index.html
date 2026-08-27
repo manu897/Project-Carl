@@ -166,12 +166,15 @@ function renderCard(n) {
 
 async function refresh() {
   try {
-    const [nodesRes, healthRes] = await Promise.all([
-      fetch("/api/nodes", { cache: "no-store" }),
-      fetch("/api/health", { cache: "no-store" }).catch(() => null),
-    ]);
+    // Sequential, not Promise.all — the hub's socket budget is small
+    // (CONFIG_LWIP_MAX_SOCKETS, shared across httpd + mDNS + SNTP + optional
+    // MQTT bridges) and gets tighter with multiple clients (M5Paper reader,
+    // other browser tabs) polling concurrently. One request at a time here
+    // costs a beat of latency but halves this tab's peak socket usage.
+    const nodesRes = await fetch("/api/nodes", { cache: "no-store" });
     if (!nodesRes.ok) throw new Error("HTTP " + nodesRes.status);
     const nodes = await nodesRes.json();
+    const healthRes = await fetch("/api/health", { cache: "no-store" }).catch(() => null);
 
     $("banner").classList.remove("show");
     $("grid").innerHTML = nodes.map(renderCard).join("");

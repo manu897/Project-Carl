@@ -1,61 +1,56 @@
 # hub
 
-Generic ESP32 dev board running the Carl hub firmware, built on **ESP-IDF**. The shipped defaults target the **ESP32-DevKitC v4 with ESP-WROOM-32U** (4 MB flash, no PSRAM, classic Tensilica LX6 dual-core). An ESP32-S3-DevKitC-1 is also fine — `idf.py set-target esp32s3` and bump the partition table for 8 MB flash; just be aware the rolling history buffer wants the bigger heap, so the S3 path benefits from PSRAM if available.
+Generic ESP32 dev board running the Carl hub firmware, built on **ESP-IDF**. The shipped defaults target the **ESP32-DevKitC v4 with ESP-WROOM-32U** (4 MB flash, no PSRAM, classic Tensilica LX6 dual-core). An ESP32-S3-DevKitC-1 is also fine — `idf.py set-target esp32s3` and bump the partition table for 8 MB flash.
 
 ## What it does
 
-Phase 3a (current — shipped 2026-05-04):
-- **Wi-Fi station** — connects to the home network using credentials from menuconfig.
-- **mDNS** — advertises `<CONFIG_CARL_MDNS_HOSTNAME>.local` (default `carl-hub.local`) on the LAN, with the `_carl-hub._tcp` service record the iOS app and M5Paper reader use for discovery.
-- **HTTP API** at port 80:
-  - `GET /api/health` — uptime, build version, free heap.
-  - `GET /api/nodes` — empty `[]` array (Phase 3b will populate from real BLE-decoded readings).
+All of Phase 3 is shipped and hardware-verified (real plant probe + Thingy:53 room node + real Project-Norman deployment):
 
-Phase 3b–3h queued (not yet built):
-- BLE central scanner + AES-CCM decrypt of BTHome v2 advertisements.
-- Per-node AES key store + `POST /api/keys` provisioning endpoint.
-- Full `/api/nodes/{id}` + history endpoints.
-- Web dashboard SPA in LittleFS.
-- Captive-portal first-boot Wi-Fi flow (replaces hardcoded creds).
-- Optional MQTT bridge to Home Assistant.
-- Optional daily HTTPS POST to Project-Norman.
+- **Wi-Fi** — station mode using stored (or menuconfig-fallback) credentials. If none are stored, boots into `Carl-Hub-Setup` SoftAP + a captive-portal DNS hijack so any phone browser lands on a Wi-Fi setup form at `http://192.168.4.1/`.
+- **mDNS** — advertises `<CONFIG_CARL_MDNS_HOSTNAME>.local` (default `carl-hub.local`) with the `_carl-hub._tcp` service record the iOS app and M5Paper reader use for discovery.
+- **BLE central scanner** — NimBLE passive scan, decrypts BTHome v2 advertisements (AES-CCM-128) from every provisioned node, replay-protected via the BTHome counter.
+- **NVS-backed key store** — up to 16 nodes, survives reboot; `POST/GET /api/keys`, `DELETE /api/keys/{mac}` for quick bring-up alongside the full node-provisioning API.
+- **Full REST API** (`main/http_api.c`) — node CRUD, history, calibration thresholds, room-join (`node_type`/`room_id`/`room` — a plant node's card gets its assigned room node's live T/H/P/lux grafted on). See the table below.
+- **Web dashboard** — a self-contained SPA served from LittleFS at `http://carl-hub.local/`. Plant cards with soil %, severity-colored bar, T/H/lux/battery chips, room badge + room-environment row, 10 s auto-refresh. Flashes automatically with `idf.py flash` — no separate step.
+- **SNTP** — real ISO-8601 UTC timestamps a few seconds after Wi-Fi connects (falls back to relative `Ns-ago` before sync).
+- **Optional MQTT bridges** (off by default, `menuconfig`): Home Assistant MQTT Discovery, and a continuous MQTT uplink to Project-Norman (topic `carl/{site}/{node_id}`, TLS, node classification (`node_type`/`room_id`) included so Norman can self-heal a node's plant/room classification from live traffic).
 
 ## Build
 
-Requires ESP-IDF v5.x.
+Requires ESP-IDF v5.x. This repo ships `tools/env-esp.sh` to activate it — see [tools/README.md](../../tools/README.md).
 
 ```bash
 cd firmware/hub
+source ../../tools/env-esp.sh
 
-# First time only — for the WROOM-32U dev board:
-idf.py set-target esp32
-# (or `idf.py set-target esp32s3` if you're on an S3-DevKitC; you'll also
-#  want to bump partitions.csv from 4 MB to 8 MB layout)
-
-# Set Wi-Fi credentials before flashing (Phase 3f will replace this with
-# a first-boot captive portal — for now, edit them via menuconfig):
-idf.py menuconfig
-#   → Carl Hub configuration → Home Wi-Fi SSID
-#   → Carl Hub configuration → Home Wi-Fi password
-
-# Build / flash / monitor
-idf.py build
-idf.py -p /dev/cu.usbmodem<...> flash monitor
-# On macOS, the WROOM-32U typically enumerates as /dev/cu.usbserial-0001
-# or /dev/cu.SLAB_USBtoUART (depends on which USB-UART chip the dev board
-# uses — CP2102 vs CH9102). `ls /dev/cu.*` after plugging in shows it.
+idf.py set-target esp32          # or esp32s3 — see partitions.csv note below
+idf.py menuconfig                # only needed for a bench Wi-Fi fallback, MQTT bridges, or Norman uplink — see below
+idf.py build flash monitor
 ```
+
+On macOS the WROOM-32U typically enumerates as `/dev/cu.usbserial-0001` or `/dev/cu.SLAB_USBtoUART` (depends on the USB-UART chip — CP2102 vs CH9102). `ls /dev/cu.*` after plugging in shows it.
 
 ## Verify
 
-After flashing, you should see in the serial monitor:
+After flashing with no stored Wi-Fi credentials, you should see:
+
+```
+I (NNNN) carl-hub: Project-Carl hub booting
+W (NNNN) carl-hub: no Wi-Fi — entering setup mode (SoftAP 'Carl-Hub-Setup')
+I (NNNN) carl-wifi: SoftAP 'Carl-Hub-Setup' up — connect and browse to http://192.168.4.1/
+```
+
+Join the AP, the Wi-Fi form pops up automatically (captive-portal DNS), submit your network — the hub saves to NVS and reboots. On a normal boot with credentials already stored:
 
 ```
 I (NNNN) carl-hub: Project-Carl hub booting
 I (NNNN) carl-wifi: joining <your-ssid>…
 I (NNNN) carl-wifi: got ip 192.168.x.x
+I (NNNN) carl-time: SNTP started (pool.ntp.org)
 I (NNNN) carl-mdns: carl-hub.local advertised on _carl-hub._tcp:80
+I (NNNN) carl-api: littlefs mounted: NNNNN/1572864 bytes used
 I (NNNN) carl-api: HTTP API listening on :80
+I (NNNN) carl-ble: BLE scan started — listening for BTHome
 I (NNNN) carl-hub: hub up — http://carl-hub.local/
 ```
 
@@ -63,29 +58,59 @@ Then from another machine on the same network:
 
 ```bash
 curl http://carl-hub.local/api/health
-# {"name":"carl-hub","version":"...","uptime_ms":1234,"free_heap_bytes":...}
-
 curl http://carl-hub.local/api/nodes
-# []
+# open http://carl-hub.local/ in a browser for the dashboard
 ```
 
-The empty array on `/api/nodes` is correct — Phase 3b adds the BLE scanner that populates it. With this build live, the **M5Paper reader can drop its `CARL_READER_USE_MOCK` flag** and point at the real hub; it'll render "No plants yet" until 3b lands.
+## Provisioning a node
 
-## First-boot flow (current vs target)
+```bash
+curl -X POST http://carl-hub.local/api/nodes \
+  -H "Content-Type: application/json" \
+  -d '{"mac":"AA:BB:CC:DD:EE:FF","key_hex":"<32-hex-char AES key>","name":"Bedroom Monstera"}'
+```
 
-**Right now (Phase 3a):** Wi-Fi creds are baked in at flash time via menuconfig. Fine for development; not a great friend-handoff story.
+The MAC + key come off the node's OLED QR code (display profile), USB serial console (cheap profile / bring-up), or a printed sticker generated by [`tools/provision.py`](../../tools/README.md). Tag a room node with `node_type` + `room_id`, then tag plants sharing that `room_id`, to get the room-join dashboard row:
 
-**After Phase 3f:** the hub creates a `Carl-Hub-Setup` SoftAP on first boot. You connect from your phone, open `192.168.4.1`, pick your home network from a list, enter the password. Saved to NVS. Reboot, joins your home Wi-Fi automatically.
+```bash
+curl -X PATCH http://carl-hub.local/api/nodes/node-XXXX \
+  -H "Content-Type: application/json" \
+  -d '{"node_type":"room","room_id":"living-room"}'
+```
+
+## Hub REST API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Hub id, version, uptime, node count, Wi-Fi RSSI |
+| `GET` | `/api/nodes` | All known nodes with latest readings (room-joined) |
+| `POST` | `/api/nodes` | Provision a node: `{mac, key_hex, name, node_type?, room_id?, calibration?}` |
+| `GET` | `/api/nodes/{id}` | One node's latest snapshot (404 if unknown) |
+| `PATCH` | `/api/nodes/{id}` | Rename / reclassify / set calibration thresholds |
+| `DELETE` | `/api/nodes/{id}` | Remove node and purge its key |
+| `GET` | `/api/nodes/{id}/history?range=24h\|7d\|30d` | Recent time-series (RAM ring buffer, ~48 samples/node) |
+| `GET`/`POST` `/api/keys`, `DELETE /api/keys/{mac}` | Lightweight key-only provisioning (bring-up convenience, not the client contract) |
+| `POST` | `/api/setup/wifi` | SoftAP-only: save Wi-Fi creds, reboots into station mode |
+
+## Optional integrations (`menuconfig` → *Carl Hub configuration*)
+
+- **Home Assistant** — `CONFIG_CARL_MQTT_HA_ENABLE`: MQTT Discovery, nodes appear as sensor entities automatically.
+- **Project-Norman** — `CONFIG_CARL_NORMAN_ENABLE`: continuous MQTT uplink. See the root [README's Norman section](../../README.md#connecting-a-hub-to-project-norman) for the full one-time setup (Norman account, hub registration, broker credentials).
 
 ## Files
 
-- `CMakeLists.txt`, `sdkconfig.defaults`, `partitions.csv` — ESP-IDF project skeleton.
-- `main/CMakeLists.txt` — source list + component requires.
-- `main/Kconfig.projbuild` — Wi-Fi SSID/password/mDNS hostname/HTTP port settings.
-- `main/main.c` — boot, init order, top-level orchestration.
-- `main/wifi_sta.{c,h}` — station-mode Wi-Fi.
+- `CMakeLists.txt`, `sdkconfig.defaults`, `partitions.csv` — ESP-IDF project skeleton. `partitions.csv` assumes 4 MB flash (WROOM-32U); bump it if targeting an 8 MB S3 board.
+- `main/main.c` — boot: NVS init, Wi-Fi (station or SoftAP-setup), SNTP, mDNS, HTTP API, BLE scanner, optional MQTT bridges — in that order.
+- `main/Kconfig.projbuild` — Wi-Fi/mDNS/HTTP settings, test-node key seeding, HA + Norman integration config.
+- `main/wifi_sta.{c,h}` — station mode + SoftAP + credential persistence.
+- `main/captive_portal.{c,h}` — DNS hijack for first-boot Wi-Fi setup.
+- `main/time_sync.{c,h}` — SNTP + ISO-8601 timestamp formatting.
 - `main/mdns_service.{c,h}` — mDNS advertisement.
-- `main/http_api.{c,h}` — REST endpoints.
-- `main/node_registry.{c,h}` — in-memory registry; empty in 3a, BLE-populated in 3b.
-- `data/` — web dashboard SPA (added in Phase 3e).
-- `firmware/common/` (sibling) provides BTHome v2 decoder + AES-CCM, used by Phase 3b.
+- `main/ble_scanner.cpp` — NimBLE passive scan + BTHome decode dispatch.
+- `main/key_store.{c,h}` — NVS-backed per-node AES key store.
+- `main/node_registry.{c,h}` — in-memory node state: readings, metadata (name/type/room), history ring buffer, JSON rendering.
+- `main/http_api.{c,h}` — all REST endpoints + the LittleFS static-file handler serving the dashboard.
+- `main/mqtt_bridge.{c,h}` — optional Home Assistant MQTT Discovery bridge.
+- `main/norman_uplink.{c,h}` — optional continuous MQTT uplink to Project-Norman.
+- `data/index.html`, `data/setup.html` — the dashboard SPA + captive-portal Wi-Fi form (built into the LittleFS image automatically).
+- `firmware/common/` (sibling) — BTHome v2 decoder + AES-CCM, shared with every node.
